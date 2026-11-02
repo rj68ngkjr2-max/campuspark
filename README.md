@@ -53,4 +53,4 @@ Technische Referenzen: [Supabase Database Functions](https://supabase.com/docs/g
 
 ## iPhone-Layout
 
-Statusleiste: `black-translucent`, `viewport-fit=cover`, Theme-Hintergrund bereits vor dem ersten App-Render. Navigation im Layout am unteren Rand mit Safe-Area-Padding innerhalb der Leiste; keine schwebende Leiste mit zusätzlichem Außenabstand. Nach Änderung der Installationsmetadaten kann eine erneute Homescreen-Installation nötig sein.
+Statusleiste: `black-translucent`, `viewport-fit=cover`, Theme-Hintergrund bereits vor dem ersten App-Render. Schwebende, abgerundete Glas-Navigation über dem Inhalt; unterer Sicherheitsabstand wird nur einmal berücksichtigt. Der Glas-Effekt ist eine Web-Nachbildung mit Blur, Transparenz und Kontrast-Fallbacks, kein natives UIKit-Material. Overlays haben einen festen Kopf mit 44px-Schließtaste und einen getrennt scrollenden Inhalt; die sichtbare Bildschirmhöhe wird bei geöffneter Tastatur berücksichtigt. Nach Änderung der Installationsmetadaten kann eine erneute Homescreen-Installation nötig sein.

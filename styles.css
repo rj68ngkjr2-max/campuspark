@@ -232,7 +232,7 @@ html.keyboard-open .tabbar{opacity:0;pointer-events:none;transform:translateY(11
 #phone:after{display:none}#phone{overflow:clip}#phone:before{bottom:auto;pointer-events:none}.schematic-map>svg{display:block;overflow:hidden}
 .form-card .route-stack:before{display:none}
 
-/* Full-screen app shell. Safe areas belong inside the bars, never below them. */
+/* Full-screen app shell, independent of floating navigation. */
 :root{--safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px);--safe-left:env(safe-area-inset-left,0px);--safe-right:env(safe-area-inset-right,0px);--shell-bg:#f8f5f6}
 html[data-campus-theme="dark"]{--shell-bg:#171419;color-scheme:dark}
 html[data-campus-theme="light"]{color-scheme:light}
@@ -246,9 +246,20 @@ body{display:block}
 #app-root>.chat-screen{padding-bottom:0}
 #bottom{position:relative;flex:0 0 auto;z-index:20}
 #bottom:empty{display:none}
-#bottom .tabbar{position:relative;inset:auto;margin:0;display:flex;height:calc(74px + var(--safe-bottom));padding:6px 8px calc(6px + var(--safe-bottom));border-radius:24px 24px 0 0;border:0;border-top:1px solid var(--glass-edge);box-shadow:0 -4px 20px #2413210a;background:var(--glass);gap:2px}
-#bottom .tabbar .tab{flex:1 1 0;min-width:0;min-height:0;height:62px;padding:4px 0}
-#bottom .tabbar:before{top:6px;bottom:calc(6px + var(--safe-bottom));border-radius:20px}
+/* A floating material layer over scrolling content, with the safe inset counted once. */
+#phone:has(.tabbar){--nav-gap:max(8px,var(--safe-bottom));--nav-space:calc(88px + var(--nav-gap))}
+#phone:has(.tabbar) #app-root>.content{padding-bottom:var(--nav-space);scroll-padding-bottom:var(--nav-space)}
+#phone:has(.tabbar) #app-root>.chat-screen{padding-bottom:var(--nav-space)}
+#bottom:has(.tabbar){position:absolute;bottom:0;left:var(--safe-left);right:var(--safe-right);height:0;pointer-events:none}
+#bottom .tabbar{position:absolute;left:14px;right:14px;bottom:var(--nav-gap);margin:0;display:flex;height:68px;padding:5px;gap:2px;border-radius:36px;border:1px solid rgba(255,255,255,.55);background:rgba(250,248,250,.65);box-shadow:0 8px 28px #24132126,inset 0 1px 1px #ffffffd9,inset 0 -1px 1px #ffffff66;-webkit-backdrop-filter:blur(24px) saturate(1.7);backdrop-filter:blur(24px) saturate(1.7);pointer-events:auto;overflow:hidden}
+#phone.dark #bottom .tabbar{background:rgba(40,36,43,.65);border-color:rgba(255,255,255,.20);box-shadow:0 8px 28px #0005,inset 0 1px 1px #ffffff42,inset 0 -1px 1px #ffffff12}
+#bottom .tabbar .tab{flex:1 1 0;min-width:0;min-height:44px;height:56px;padding:4px 0;border-radius:29px;color:var(--ink);font-size:10px;font-weight:600;gap:3px}
+#bottom .tabbar .tab.active{color:var(--blue);background:rgba(120,110,123,.13);box-shadow:inset 0 1px 1px #ffffff40}
+#phone.dark #bottom .tabbar .tab.active{background:rgba(255,255,255,.12);color:var(--blue)}
+#bottom .tabbar:before{top:5px;bottom:5px;border-radius:29px;background:rgba(140,130,145,.18);box-shadow:inset 0 1px 1px #ffffff60;transition:transform .16s,width .16s}
+#bottom .tabbar.is-scrubbing .tab.active{background:transparent;box-shadow:none}
+#bottom .tabbar .scrub-target{color:var(--blue)}
+@media(prefers-reduced-transparency:reduce),(prefers-contrast:more){#bottom .tabbar,#phone.dark #bottom .tabbar{background:var(--paper);backdrop-filter:none;-webkit-backdrop-filter:none;border-color:var(--muted)}}
 #bottom .preview-bar{position:relative;inset:auto;padding:12px 24px calc(12px + var(--safe-bottom))}
 html.keyboard-open #bottom{display:none}
 .sheet{max-height:calc(100% - var(--safe-top) - 12px);padding-bottom:calc(24px + var(--safe-bottom))}
@@ -268,3 +279,38 @@ html.keyboard-open #bottom{display:none}
 .leaflet-control-attribution{font-size:10px!important;color:#333!important;background:#ffffffe6!important}
 .leaflet-control-attribution a{color:#165e8d!important}
 .campus-lot-marker:focus-visible{outline:3px solid #c5002d;border-radius:18px;outline-offset:3px}
+
+/* Shared sheet layout: stable header, scrollable body and full-size touch targets. */
+.sheetcover{padding:calc(var(--safe-top) + 12px) var(--safe-right) 0 var(--safe-left);bottom:var(--keyboard-inset,0px);justify-content:center;background:rgba(12,9,16,.46);overscroll-behavior:none}
+.sheet{display:flex;flex-direction:column;width:100%;max-width:560px;min-width:0;max-height:100%;padding:0;overflow:hidden;border-radius:30px 30px 0 0;background:var(--paper);border:1px solid var(--glass-edge);box-shadow:0 -12px 60px #0003}
+.sheet-header{flex:none;padding:10px 20px 14px;background:var(--paper);border-bottom:1px solid var(--line)}
+.sheet-header .handle{margin:0 auto 12px;width:36px;height:5px;background:var(--muted);opacity:.4}
+.sheet-top{margin:0;gap:12px;align-items:center;min-width:0}
+.sheet-top h3{font-size:22px;line-height:1.2;letter-spacing:-.025em;overflow-wrap:anywhere;min-width:0;flex:1}
+.sheet .closebtn{width:44px;height:44px;min-width:44px;flex:0 0 44px;color:var(--ink)}
+.sheet-body{min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:20px 22px calc(22px + var(--safe-bottom));scroll-padding:20px}
+.sheet-body>*{max-width:100%;min-width:0}
+.sheet-body p{font-size:14px;line-height:1.6;margin:0 0 16px;overflow-wrap:anywhere}
+.sheet-body p:last-child{margin-bottom:0}
+.sheet-body form{margin:0;min-width:0}
+.sheet-body .route-stack{display:block;margin:0}
+.sheet-body .route-stack:before{display:none}
+.sheet-body .fieldlabel{margin:18px 0 8px;font-size:13px;line-height:1.4}
+.sheet-body form>.fieldlabel:first-child,.sheet-body .route-stack>.fieldlabel:first-child{margin-top:0}
+.sheet-body .field{display:block;width:100%;min-width:0;max-width:100%;min-height:50px;box-sizing:border-box}
+.sheet-body input[type=datetime-local]{appearance:none;-webkit-appearance:none;text-align:left}
+.sheet-body input::-webkit-date-and-time-value{text-align:left;min-height:1.3em}
+.sheet-body textarea{min-height:112px;resize:vertical}
+.sheet-body .primary,.sheet-body .secondary,.sheet-body .textbtn{min-height:48px;width:100%;white-space:normal;line-height:1.4}
+.sheet-body .primary{margin-top:22px;box-shadow:0 5px 14px #a800241a}
+.sheet-body>.primary:first-child{margin-top:0}
+.sheet-body .choice-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:18px}
+.sheet-body .choice{min-height:54px;font-size:15px;padding:12px;line-height:1.4}
+.sheet-body .info-banner{margin-top:20px;font-size:12px}
+.sheet-body .tutorial-step strong{font-size:15px;margin:20px 0 7px}
+.sheet-body .tutorial-step strong:first-child{margin-top:0}
+html.keyboard-open .sheet-body{padding-bottom:22px}
+html.keyboard-open #phone:has(.tabbar) #app-root>.chat-screen{padding-bottom:0}
+@media(max-width:360px){.sheet-header{padding-left:16px;padding-right:16px}.sheet-body{padding-left:16px;padding-right:16px}.sheet-top h3{font-size:20px}#bottom .tabbar{left:10px;right:10px}}
+
+.toast{top:calc(12px + var(--safe-top));font-size:13px;line-height:1.45;padding:12px 16px}
