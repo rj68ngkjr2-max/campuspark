@@ -441,3 +441,6 @@ input.field::-webkit-datetime-edit{min-width:0;padding:0}
 /* Installed windows use their actual containing block, not Safari toolbar viewport units. */
 html[data-display-mode="standalone"] #phone{position:fixed;inset:0;height:auto;min-height:0;max-height:none;background:var(--shell-bg)}
 @media(display-mode:standalone){#phone{position:fixed;inset:0;height:auto;min-height:0;max-height:none;background:var(--shell-bg)}}
+
+/* Independent demo entry; existing authenticated layouts are unchanged. */
+.demo-entry{display:block;text-align:center;text-decoration:none;margin:8px 0 0}.demo-entry-note{text-align:center;margin:9px 0 0}
