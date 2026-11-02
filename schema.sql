@@ -451,3 +451,133 @@ end $$;
 revoke all on function public.campus_rpc(text,jsonb) from public,anon;
 grant execute on function public.campus_rpc(text,jsonb) to authenticated;
 commit;
+
+-- Manual account approval upgrade.
+begin;
+-- Preserve existing access once; re-running this migration never approves new accounts.
+do $$ begin
+ if not exists(select 1 from information_schema.columns where table_schema='campus' and table_name='account_access' and column_name='is_approved') then
+  alter table campus.account_access add column is_approved boolean not null default false;
+  insert into campus.account_access(user_id,is_approved) select id,true from auth.users on conflict(user_id) do update set is_approved=true;
+ end if;
+end $$;
+alter table campus.account_access alter column is_approved set default false;
+create or replace function campus.admin_rpc(action text,payload jsonb,uid uuid) returns jsonb
+language plpgsql security definer set search_path='' as $$
+declare result jsonb; target uuid; lot campus.lots; occupied int; q text:=left(trim(coalesce(payload->>'query','')),100);
+ page_number int:=greatest(0,least(coalesce((payload->>'page')::int,0),100000));
+begin
+ -- Defense in depth: never trust a caller-supplied actor or browser role.
+ if uid is distinct from auth.uid() or not exists(select 1 from campus.account_access where user_id=uid and is_admin and is_approved and not is_blocked) then raise exception 'ADMIN_REQUIRED'; end if;
+ if action='adminOverview' then
+  return jsonb_build_object('users',(select count(*) from auth.users),'pending',(select count(*) from auth.users u left join campus.account_access a on a.user_id=u.id where not coalesce(a.is_approved,false)), 'blocked',(select count(*) from campus.account_access where is_blocked),'lots',(select count(*) from campus.lots where active),'parking',(select count(*) from campus.parking where checked_out_at is null and ends_at>now()));
+ elsif action='adminLots' then
+  return (select coalesce(jsonb_agg(to_jsonb(l)||jsonb_build_object('occupied',(select count(*) from campus.parking where lot_id=l.id and checked_out_at is null and ends_at>now())) order by l.active desc,l.id),'[]') from campus.lots l);
+ elsif action='adminSaveLot' then
+  if coalesce(payload->>'id','')!~'^[a-z0-9_-]{1,24}$' or length(trim(coalesce(payload->>'name',''))) not between 2 and 80 or length(coalesce(payload->>'description',''))>240
+   or (payload->>'capacity') is null or (payload->>'capacity')::int not between 1 and 10000
+   or (payload->>'lat') is null or (payload->>'lat')::float8 not between -90 and 90
+   or (payload->>'lng') is null or (payload->>'lng')::float8 not between -180 and 180
+   or jsonb_typeof(payload->'active') is distinct from 'boolean' then raise exception 'INVALID_LOT'; end if;
+  select * into lot from campus.lots where id=payload->>'id' for update;
+  if coalesce((payload->>'create')::boolean,false) and lot.id is not null then raise exception 'LOT_EXISTS'; end if;
+  if not coalesce((payload->>'create')::boolean,false) and lot.id is null then raise exception 'NOT_FOUND'; end if;
+  select count(*) into occupied from campus.parking where lot_id=payload->>'id' and checked_out_at is null and ends_at>now();
+  if (payload->>'capacity')::int<occupied then raise exception 'CAPACITY_OCCUPIED'; end if;
+  insert into campus.lots(id,name,description,capacity,lat,lng,active) values(payload->>'id',trim(payload->>'name'),trim(coalesce(payload->>'description','')),(payload->>'capacity')::int,(payload->>'lat')::float8,(payload->>'lng')::float8,(payload->>'active')::boolean)
+  on conflict(id) do update set name=excluded.name,description=excluded.description,capacity=excluded.capacity,lat=excluded.lat,lng=excluded.lng,active=excluded.active returning to_jsonb(campus.lots.*) into result;
+  insert into campus.admin_audit(actor_id,action,target_id,details) values(uid,action,payload->>'id',jsonb_build_object('before',to_jsonb(lot),'after',result));
+  return result;
+ elsif action='adminApproveUser' then
+  target:=(payload->>'id')::uuid;
+  if not exists(select 1 from auth.users where id=target) then raise exception 'NOT_FOUND'; end if;
+  if exists(select 1 from campus.account_access where user_id=target and is_blocked) then raise exception 'ACCOUNT_BLOCKED'; end if;
+  insert into campus.account_access(user_id,is_approved) values(target,true) on conflict(user_id) do update set is_approved=true,updated_at=now();
+  insert into campus.admin_audit(actor_id,action,target_id) values(uid,action,target::text);return 'true';
+ elsif action='adminUsers' then
+  return jsonb_build_object('page',page_number,'total',(select count(*) from auth.users u left join campus.profiles p on p.id=u.id where (q='' or u.email ilike '%'||q||'%' or p.name ilike '%'||q||'%') and (not coalesce((payload->>'pending_only')::boolean,false) or not exists(select 1 from campus.account_access ap where ap.user_id=u.id and ap.is_approved))),
+   'users',(select coalesce(jsonb_agg(x order by x.created_at desc,x.id),'[]') from (
+    select u.id,u.email,u.created_at,u.last_sign_in_at,p.name,p.plate,coalesce(a.is_approved,false) as is_approved,coalesce(a.is_admin,false) as is_admin,coalesce(a.is_blocked,false) as is_blocked,coalesce(a.block_reason,'') as block_reason
+    from auth.users u left join campus.profiles p on p.id=u.id left join campus.account_access a on a.user_id=u.id
+    where (q='' or u.email ilike '%'||q||'%' or p.name ilike '%'||q||'%') and (not coalesce((payload->>'pending_only')::boolean,false) or not exists(select 1 from campus.account_access ap where ap.user_id=u.id and ap.is_approved)) order by u.created_at desc,u.id limit 20 offset page_number*20) x));
+ elsif action in ('adminSaveUser','adminBlockUser') then
+  target:=(payload->>'id')::uuid;
+  if not exists(select 1 from auth.users where id=target) then raise exception 'NOT_FOUND'; end if;
+  insert into campus.account_access(user_id) values(target) on conflict do nothing;
+  perform 1 from campus.account_access where user_id=target for update;
+  if action='adminSaveUser' then
+   if length(trim(coalesce(payload->>'name',''))) not between 2 and 60 or length(coalesce(payload->>'plate',''))>16 then raise exception 'INVALID_PROFILE'; end if;
+   if not exists(select 1 from campus.profiles where id=target) then raise exception 'PROFILE_NOT_READY'; end if;
+   update campus.profiles set name=trim(payload->>'name'),plate=upper(trim(coalesce(payload->>'plate',''))) where id=target;
+   insert into campus.admin_audit(actor_id,action,target_id) values(uid,action,target::text);
+  else
+   if target=uid or exists(select 1 from campus.account_access where user_id=target and is_admin) then raise exception 'ADMIN_ACCOUNT_PROTECTED'; end if;
+   if jsonb_typeof(payload->'blocked') is distinct from 'boolean' then raise exception 'INVALID_STATUS'; end if;
+   if (payload->>'blocked')::boolean and length(trim(coalesce(payload->>'reason',''))) not between 3 and 500 then raise exception 'BLOCK_REASON_REQUIRED'; end if;
+   update campus.account_access set is_blocked=(payload->>'blocked')::boolean,block_reason=case when (payload->>'blocked')::boolean then trim(payload->>'reason') else '' end,updated_at=now() where user_id=target;
+   if (payload->>'blocked')::boolean then
+    -- Retain parking occupancy: suspension does not move a car. Admin can end it separately.
+    update campus.rides set cancelled=true where owner_id=target and departure>now();
+    update campus.wanted set closed=true where owner_id=target and departure>now();
+    update campus.conversations set status='withdrawn' where passenger_id=target and status in ('pending','accepted') and ride_id in(select id from campus.rides where departure>now());
+   end if;
+   insert into campus.admin_audit(actor_id,action,target_id,details) values(uid,action,target::text,jsonb_build_object('blocked',(payload->>'blocked')::boolean,'reason',coalesce(payload->>'reason','')));
+  end if;
+  return 'true';
+ elsif action='adminParking' then
+  return jsonb_build_object('page',page_number,'total',(select count(*) from campus.parking where checked_out_at is null and ends_at>now()),'sessions',(
+   select coalesce(jsonb_agg(x order by x.started_at,x.id),'[]') from(select s.id,s.started_at,s.ends_at,s.lot_id,l.name as lot_name,p.name,p.plate
+   from campus.parking s join campus.lots l on l.id=s.lot_id join campus.profiles p on p.id=s.user_id where s.checked_out_at is null and s.ends_at>now() order by s.started_at,s.id limit 20 offset page_number*20) x));
+ elsif action='adminCheckout' then
+  target:=(payload->>'id')::uuid;
+  update campus.parking set checked_out_at=now() where id=target and checked_out_at is null and ends_at>now();
+  if not found then raise exception 'PARKING_ENDED'; end if;
+  insert into campus.admin_audit(actor_id,action,target_id) values(uid,action,target::text);return 'true';
+ elsif action='adminAudit' then
+  return (select coalesce(jsonb_agg(x order by x.id desc),'[]') from (select a.*,coalesce(p.name,u.email,'Admin') as actor_name from campus.admin_audit a join auth.users u on u.id=a.actor_id left join campus.profiles p on p.id=a.actor_id order by a.id desc limit 50) x);
+ else raise exception 'UNKNOWN_ACTION'; end if;
+end $$;
+revoke all on function campus.admin_rpc(text,jsonb,uuid) from public,anon,authenticated;
+
+create or replace function public.campus_rpc(action text,payload jsonb default '{}') returns jsonb
+language plpgsql security definer set search_path='' as $$
+declare uid uuid:=auth.uid(); access campus.account_access; result jsonb;
+begin
+ if uid is null then raise exception 'AUTH_REQUIRED'; end if;
+ -- Serialize admin mutations before locking any accounts. User requests retain a
+ -- shared account lock until completion, so a completed suspension is effective.
+ if action like 'admin%' then perform pg_advisory_xact_lock(20461102,1); end if;
+ insert into campus.account_access(user_id) values(uid) on conflict do nothing;
+ select * into access from campus.account_access where user_id=uid for share;
+ if access.is_blocked then raise exception 'ACCOUNT_BLOCKED'; end if;
+ if not access.is_approved then raise exception 'APPROVAL_REQUIRED'; end if;
+ if action like 'admin%' then
+  if not access.is_admin then raise exception 'ADMIN_REQUIRED'; end if;
+  return campus.admin_rpc(action,payload,uid);
+ end if;
+ result:=campus.user_rpc(action,payload);
+ if action='bootstrap' then result:=result||jsonb_build_object('account',jsonb_build_object('is_admin',access.is_admin,'is_approved',access.is_approved)); end if;
+ return result;
+end $$;
+revoke all on function public.campus_rpc(text,jsonb) from public,anon;
+grant execute on function public.campus_rpc(text,jsonb) to authenticated;
+-- Supabase Auth reads only status flags. No service key is exposed to the browser.
+create or replace function public.campus_access_token_hook(event jsonb) returns jsonb
+language plpgsql stable security invoker set search_path='' as $$
+declare approved boolean; blocked boolean;
+begin
+ select is_approved,is_blocked into approved,blocked from campus.account_access where user_id=(event->>'user_id')::uuid;
+ if coalesce(blocked,false) then return jsonb_build_object('error',jsonb_build_object('http_code',403,'message','ACCOUNT_BLOCKED')); end if;
+ if not coalesce(approved,false) then return jsonb_build_object('error',jsonb_build_object('http_code',403,'message','APPROVAL_REQUIRED')); end if;
+ return jsonb_build_object('claims',event->'claims');
+end $$;
+revoke all on function public.campus_access_token_hook(jsonb) from public,anon,authenticated;
+grant usage on schema public,campus to supabase_auth_admin;
+grant execute on function public.campus_access_token_hook(jsonb) to supabase_auth_admin;
+grant select(user_id,is_approved,is_blocked) on campus.account_access to supabase_auth_admin;
+do $$ begin
+ if not exists(select 1 from pg_policies where schemaname='campus' and tablename='account_access' and policyname='campus_auth_reads_status') then
+  create policy campus_auth_reads_status on campus.account_access for select to supabase_auth_admin using(true);
+ end if;
+end $$;
+commit;
