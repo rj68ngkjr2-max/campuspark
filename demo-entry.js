@@ -3,7 +3,7 @@ import {personas,DEMO_PASSWORD} from './demo-store.js';
 import './source-app.js';
 const phone=document.querySelector('#phone'),bar=document.createElement('div');
 bar.className='demo-bar';
-bar.innerHTML='<span>Testversion · alle Daten erfunden</span><button type="button" aria-expanded="false" aria-controls="demo-controls">Demo steuern</button>';
+bar.innerHTML='<span>Testversion · isolierte Testdaten</span><button type="button" aria-expanded="false" aria-controls="demo-controls">Demo steuern</button>';
 const panel=document.createElement('div');panel.id='demo-controls';panel.className='demo-controls';panel.hidden=true;
 const reset=document.createElement('button');reset.type='button';reset.className='secondary';reset.textContent='Demo zurücksetzen';reset.addEventListener('click',()=>{demo.reset();try{localStorage.removeItem('campuspark.demo.theme')}catch{}location.assign('./demo.html')});
 const login=document.createElement('a');login.href='./demo.html?login=1';login.className='textbtn';login.textContent='Zur Demo-Anmeldung';

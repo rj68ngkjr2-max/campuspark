@@ -12,7 +12,7 @@ Oben ist die Testversion gekennzeichnet. Unter „Demo steuern“ steht auch die
 
 | Aufgabe | Ausgangslage und prüfbares Ergebnis |
 | --- | --- |
-| 1 Parken | Lea hat `LÖ DEMO 1` und `FR DEMO 2`. Kein aktiver Parkvorgang. P1, P2 und P4 haben freie Kapazität. Das zweite Kennzeichen und 90 Minuten können gewählt werden; Endzeit und Checkout bleiben wie in der Live-Oberfläche. |
+| 1 Parken | Lea hat `LÖ LW 248` und `FR LW 907`. Kein aktiver Parkvorgang. P1, P2 und P4 haben freie Kapazität. Das zweite Kennzeichen und 90 Minuten können gewählt werden; Endzeit und Checkout bleiben wie in der Live-Oberfläche. |
 | 2 Mitfahrt | Alex Campus bietet **morgen um 08:00 Uhr Schopfheim → DHBW Lörrach** an, mit drei freien Plätzen. Noch keine Anfrage von Lea vorhanden. Anfrage erstellen und anschließend „Ich warte am vereinbarten Treffpunkt.“ im Chat senden. |
 | 3 Angebot | Im selben Nutzerkonto eine neue Fahrt **morgen um 07:45 Uhr Weil am Rhein → DHBW Lörrach**, zwei freie Plätze, veröffentlichen. Das Nutzerkonto hat zu Beginn keine eigenen Angebote. Ortsauswahl und Formular entsprechen der Live-App. |
 | Z Administration | Das Konto `campus-test-neu` ist ausstehend. Nach der Freigabe ist eine normale Demo-Anmeldung möglich; das Konto bekommt keine Adminrechte. |
@@ -31,7 +31,9 @@ Nur für die Moderation, getrennt vom Aufgabenblatt aufbewahren:
 | --- | --- | --- | --- |
 | Lea Winter | Nutzer | `lea@campuspark.example.invalid` | freigegeben, zwei Kennzeichen |
 | Alex Campus | Admin | `alex@campuspark.example.invalid` | freigegeben, Gegenkonto für Aufgabe 2 |
-| campus-test-neu | Nutzer | `campus-test-neu@campuspark.example.invalid` | wartet auf Freigabe |
+| campus-test-neu | Nutzer | `till.brender@gmail.com` | wartet auf Freigabe |
+
+Die Adresse `till.brender@gmail.com` wird auf Wunsch als sichtbare Adresse des Demo-Kontos verwendet. Es werden keine E-Mails gesendet und kein echtes Konto bei diesem Anbieter verwendet. Die Kennzeichen sind realistisch formatierte Beispieldaten.
 
 Öffentliches, rein lokales Demo-Passwort für diese Testkonten: `CampusDemo2026!`. Es ist kein Zugang zur Live-App und keine geheime oder echte Authentifizierung.
 
@@ -47,9 +49,9 @@ Das dritte Konto dient nur dem Freigabetest und besitzt dieselbe Nutzerrolle; es
 
 ## Trennung von der Live-App
 
-Die Oberfläche und ihre Bedienabläufe stammen aus demselben App-Code. Der separate Demo-Build ersetzt ausschließlich die Datenanbindung und ergänzt Demo-Steuerung sowie Demo-Anmeldung. Der Live-App-Code, dessen Styles und die Supabase-Datenbank bleiben unverändert.
+Die Oberfläche und ihre Bedienabläufe stammen aus demselben App-Code. Der separate Demo-Build ersetzt ausschließlich die Datenanbindung und ergänzt Demo-Steuerung sowie Demo-Anmeldung. Bedienänderungen werden im gemeinsamen App-Code und den gemeinsamen Styles parallel für Live und Demo übernommen. Demo-Testdaten und lokale Demo-Anmeldung bleiben separat; echte Konten und die Supabase-Datenbank werden dafür nicht verändert.
 
-`demo.js` enthält keinen Supabase-Client, keine Projektkonfiguration und keinen Zugriff auf Live-Anmeldeschlüssel. Daten werden ausschließlich unter `campuspark.demo.v2` im Session Storage dieses Tabs gespeichert; das Erscheinungsbild nutzt `campuspark.demo.theme`. Die lokale Freigabe verleiht keine Live-Berechtigung. Es werden keine E-Mails gesendet.
+`demo.js` enthält keinen Supabase-Client, keine Projektkonfiguration und keinen Zugriff auf Live-Anmeldeschlüssel. Daten werden ausschließlich unter `campuspark.demo.v3` im Session Storage dieses Tabs gespeichert; das Erscheinungsbild nutzt `campuspark.demo.theme`. Die lokale Freigabe verleiht keine Live-Berechtigung. Es werden keine E-Mails gesendet.
 
 Die Demo synchronisiert nicht zwischen Geräten oder Tabs. Bei gesperrtem Browserspeicher arbeitet sie im Arbeitsspeicher; Neuladen setzt dann den Zustand zurück. Karte und Online-Ortsvorschläge benötigen Internet und verwenden OpenStreetMap beziehungsweise Photon. Das eigene Demo-Manifest startet auch vom Home-Bildschirm auf `demo.html`.
 
@@ -58,3 +60,9 @@ Die Demo synchronisiert nicht zwischen Geräten oder Tabs. Bei gesperrtem Browse
 Automatisierte Szenariotests decken die exakten Aufgaben 1, 2, 3 und Z, beide Rollen, Nachrichtenduplikate, Reset, Speicherung und Trennung vom Live-Build ab. Im Browser wurden das passende Angebot, Anfrage und Nachricht sowie die abgelehnte Anmeldung vor und die normale Anmeldung nach Freigabe geprüft.
 
 Die Gerätebeobachtungen und Bewertungen aus euren Word-Bögen bleiben Teil der echten Nutzertests. Browseransichten am Desktop ersetzen keine Prüfung auf einem echten iPhone und Android-Gerät. Insbesondere unterer Bildschirmrand, Tastatur, Swipe-Gesten und Home-Bildschirm-Modus vor jeder Runde auf den Testgeräten prüfen.
+
+## Gemeinsame Bedienänderungen in Live und Demo
+
+Die Parkdauer verwendet 15-Minuten-Schritte von 15 Minuten bis 12 Stunden. Das Minutenrad bietet 00, 15, 30 und 45. Auschecken erfolgt über den Slider; der zusätzliche Knopf entfällt. Der Slider bleibt per Tastatur bedienbar.
+
+Nach einer Mitfahranfrage öffnet sich weiterhin der Chat. Dort wird erklärt, dass die Rückmeldung noch aussteht und der Sitzplatz erst nach einer Zusage bestätigt ist. Nach dem Veröffentlichen eines Angebots zeigt eine Bestätigung Strecke, Abfahrt, Sitzplätze und den Hinweis auf Anfragen unter Chats.

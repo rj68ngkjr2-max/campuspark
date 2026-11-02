@@ -418,7 +418,6 @@ input.field::-webkit-datetime-edit{min-width:0;padding:0}
 .checkout-swipe.is-dragging .swipe-knob{transition:none}
 .checkout-label{padding-left:50px;padding-right:10px;font-size:12px;pointer-events:none}
 .checkout-swipe.is-checking-out{pointer-events:none;opacity:.7}.checkout-swipe.is-checking-out .checkout-label{opacity:0}
-.checkout-alternative{display:block;margin:3px auto 0;padding:5px 10px;min-height:30px;font-size:11px}
 .session-content>.parking-other{margin:0;flex-shrink:0}
 .session-content>.parking-other>summary{padding:10px 0;font-size:12px;min-height:36px}
 #phone:has(.tabbar) #app-root>.session-content:has(.parking-other[open]){overflow-y:auto;display:block}
@@ -444,3 +443,7 @@ html[data-display-mode="standalone"] #phone{position:fixed;inset:0;height:auto;m
 
 /* Independent demo entry; existing authenticated layouts are unchanged. */
 .demo-entry{display:block;text-align:center;text-decoration:none;margin:8px 0 0}.demo-entry-note{text-align:center;margin:9px 0 0}
+
+/* Shared live/demo feedback for ride requests and published offers. */
+.booking-next-step{flex-basis:100%;margin:8px 0 0;font-size:12px;line-height:1.5;color:var(--muted)}
+.ride-success{text-align:center}.ride-success-mark{display:grid;place-items:center;width:56px;height:56px;margin:2px auto 16px;border-radius:20px;color:var(--green);background:var(--soft)}.ride-success h3{margin:0 0 10px}.ride-success p{font-size:14px;line-height:1.6;color:var(--muted)}.ride-success dl{margin:20px 0;text-align:left;border-radius:18px;background:var(--soft);padding:8px 16px}.ride-success dl>div{padding:10px 0}.ride-success dt{font-size:11px;color:var(--muted);margin-bottom:5px}.ride-success dd{margin:0;font-size:14px;font-weight:600;overflow-wrap:anywhere}.ride-success .textbtn{display:block;width:100%;margin-top:12px}
