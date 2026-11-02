@@ -64,3 +64,26 @@ Karten-Gesten sind auf den Kartenbereich begrenzt (`touch-action: none` und loka
 Das Icon verbindet das bereitgestellte DHBW-Zeichen mit einem weißen Park-P auf dunklem Hintergrund. Es wird auf dem Homescreen, als Favicon, auf der Anmeldung und im App-Kopf verwendet. PNG-Exporte: 180, 192 und 512 Pixel. Versionsparameter erneuern Browser- und PWA-Assets; das von iOS separat gespeicherte Homescreen-Icon kann eine erneute Installation erfordern. Der Header hat 32 Pixel oberen Innenabstand zusätzlich zur Safe Area (10 Pixel mehr als zuvor).
 
 Beim Loslassen bleibt die Glasfläche sichtbar und gleitet in 240 ms zur ausgewählten Schaltfläche. Eine neue Berührung währenddessen setzt an der sichtbaren Position an. Reduzierte Bewegung deaktiviert diesen Übergang.
+
+## Administration
+
+Der bestehende Login bleibt unverändert. `campus.account_access.is_admin` ist der serverseitig geprüfte Schalter; neue Konten erhalten standardmäßig `false`. Rollen und Sperren werden bei jedem RPC aus der Datenbank gelesen, nicht aus manipulierbaren Profilfeldern oder Browserzustand. Die Tabellen sind durch fehlende Client-Grants und RLS geschützt. `campus.user_rpc` und `campus.admin_rpc` sind nur intern aufrufbar.
+
+Für ein bestehendes Projekt einmal `migration-admin.sql` im Supabase SQL Editor ausführen. `schema.sql` enthält die vollständige Neuinstallation inklusive Migration. Die Migration ist wiederholbar und erhält bestehende Daten und Rollen.
+
+Einen vorhandenen Nutzer über den Supabase Table Editor, Schema `campus`, Tabelle `account_access`, anhand seiner `auth.users.id` zuordnen und `is_admin = true` setzen. Alternativ im SQL Editor (Adresse ersetzen):
+
+```sql
+update campus.account_access a
+set is_admin = true, updated_at = now()
+from auth.users u
+where a.user_id = u.id and lower(u.email) = lower('bestehendes-konto@example.org');
+```
+
+Rolle entziehen: denselben Datensatz auf `is_admin = false` setzen. Die App aktualisiert die Rolle beim nächsten Aufruf bzw. spätestens beim nächsten erfolgreichen Poll im Vordergrund. Admins öffnen **Profil → Administration**. Dort verfügbar: Parkflächen anlegen/bearbeiten/deaktivieren, Kapazität und Kartenposition pflegen; Konten suchen, Namen/Kennzeichen bearbeiten, sperren/entsperren; aktive Parkvorgänge beenden und die letzten 50 Verwaltungsaktionen einsehen. Die Verwaltung vergibt keine weiteren Admin-Rollen; dies bleibt wie vorgesehen eine Datenbankentscheidung.
+
+Sperren gelten für alle CampusPark-Datenzugriffe, auch mit bestehenden Sessions. Die Supabase-Authentifizierung selbst bleibt bestehen, damit die App eine verständliche Sperrmeldung anzeigen kann. Zukünftige Angebote/Gesuche gesperrter Nutzer werden geschlossen und deren Mitfahranfragen zurückgezogen. Parkvorgänge bleiben bis zum regulären Ende bestehen, da eine Kontosperre kein Fahrzeug entfernt. Admin-Konten können in der Oberfläche nicht gesperrt werden. Entsperren stellt abgesagte Fahrten nicht wieder her.
+
+Parkflächen werden deaktiviert statt gelöscht, sodass Historien und laufende Parkvorgänge erhalten bleiben. Kapazitäten können nicht unter die aktuelle Belegung abgesenkt werden. Admins sehen E-Mail, Anzeigename, Kennzeichen, Registrierungs-/Anmeldezeit und Sperrstatus, keine Passwörter und keine fremden Chat-Inhalte.
+
+Validierung: 17 bisherige Datenbanktests, 15 Admin-/Berechtigungstests, 11 Gestentests. Referenzen: [Supabase-Funktionsberechtigungen](https://supabase.com/docs/guides/database/functions), [Supabase RLS](https://supabase.com/docs/guides/database/postgres/row-level-security).
