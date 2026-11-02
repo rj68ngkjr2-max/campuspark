@@ -13,7 +13,7 @@ Mobile Campus-App auf Basis der CampusPark-HTML-Vorlage und der Navigationsmecha
 - Private Chats zwischen Fahrer und anfragender Person, Bestätigung/Ablehnung/Zurückziehen einer Anfrage und Ungelesen-Punkte. Erst eine Bestätigung belegt einen Sitzplatz.
 - Untere Menüleiste mit Fingerziehen zum gewünschten Menüpunkt, Dark Mode, Systemdarstellung, Einführung und installierbare PWA.
 
-Die Parkflächen und Kapazitäten stammen aus dem Studienprototyp und sind **keine verifizierten Stellplatzdaten**. Die Belegung ist die Anzahl aktiver Check-ins, keine Sensor-Messung. Es gibt keine offizielle Parkberechtigung, Standortverfolgung, Schrankenanbindung oder Auslastungsprognose. Die Campuskarte ist ein Schema mit Link zur OpenStreetMap-Karte.
+Die Parkflächen und Kapazitäten stammen aus dem Studienprototyp und sind **keine verifizierten Stellplatzdaten**. Die Belegung ist die Anzahl aktiver Check-ins, keine Sensor-Messung. Es gibt keine offizielle Parkberechtigung, Standortverfolgung, Schrankenanbindung oder Auslastungsprognose. Die Campuskarte ist eine interaktive Leaflet-/OpenStreetMap-Karte mit Zoomen, Verschieben, Parkflächen-Auswahl, Zentrierung und externen Karten-/Routenlinks. Parkflächenpositionen stammen näherungsweise aus der Vorlage. Leaflet 1.9.4 ist mit BSD-2-Clause-Lizenz lokal gebündelt; Kartenkacheln werden erst bei sichtbarer Karte vom OSM-Server geladen und nicht für Offline-Nutzung vorab gespeichert.
 
 ## Quellcode und Build
 
@@ -50,3 +50,7 @@ Für die iPhone-Installation die App in Safari öffnen und über Teilen → Zum 
 17 PostgreSQL-Tests mit PGlite prüfen unter anderem fremde Datenzugriffe, Profilanlage, Kapazität, doppelte Check-ins, Nachrichtenwiederholungen, Sitzplatzvergabe, Lesestände und Absagen. Mobile Navigation, Fingerziehen über die Menüleiste, Check-in und Formulare wurden zusätzlich mit isolierten lokalen Testdaten im Browser geprüft. Diese Testdaten werden nicht veröffentlicht.
 
 Technische Referenzen: [Supabase Database Functions](https://supabase.com/docs/guides/database/functions), [Supabase Auth](https://supabase.com/docs/guides/auth/passwords), [GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site).
+
+## iPhone-Layout
+
+Statusleiste: `black-translucent`, `viewport-fit=cover`, Theme-Hintergrund bereits vor dem ersten App-Render. Navigation im Layout am unteren Rand mit Safe-Area-Padding innerhalb der Leiste; keine schwebende Leiste mit zusätzlichem Außenabstand. Nach Änderung der Installationsmetadaten kann eine erneute Homescreen-Installation nötig sein.
