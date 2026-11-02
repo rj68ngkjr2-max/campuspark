@@ -207,7 +207,7 @@ body{display:flex;justify-content:center;background:#ece7e9}
 #app-root{display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden}
 #app-root>.content{flex:1;min-height:0;overflow-y:auto;padding-bottom:calc(112px + env(safe-area-inset-bottom,0px))}
 #app-root>.authcontent{padding-bottom:36px}
-.apphead{flex-shrink:0;padding-top:22px;min-height:92px}
+.apphead{flex-shrink:0;padding-top:32px;min-height:102px}
 .content{padding-left:24px;padding-right:24px}
 .tabbar{position:absolute;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom,0px));height:74px;touch-action:none;user-select:none;-webkit-user-select:none}
 .tabbar .tab{position:relative;z-index:1;min-width:0;min-height:60px;font-size:10px;padding:5px 0}
@@ -357,3 +357,9 @@ input.field::-webkit-datetime-edit{min-width:0;padding:0}
 /* Loading/error messages must not change page height during a map gesture. */
 .mapcard{position:relative}
 .map-status{position:absolute;z-index:2;top:12px;left:58px;right:12px;padding:8px 10px;border-radius:12px;background:var(--paper);box-shadow:0 2px 12px #0002;pointer-events:none}
+
+/* DHBW parking identity; retain sharp text below the iOS safe area. */
+.brand-inline{display:inline-flex;align-items:center;gap:5px}
+.brand-inline img{display:block;width:20px;height:20px;border-radius:5px}
+.welcome .biglogo{width:96px;height:96px;border-radius:24px;transform:none;background:#171419;overflow:hidden;box-shadow:0 12px 26px rgba(72,18,31,.18)}
+.welcome .biglogo img{display:block;width:100%;height:100%;object-fit:cover}
