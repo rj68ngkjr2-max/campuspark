@@ -4,3 +4,4 @@
 .demo-controls{flex:0 0 auto;padding:12px 18px;background:var(--paper);border-bottom:1px solid var(--line);max-height:40%;overflow-y:auto}
 .demo-controls[hidden]{display:none}.demo-controls label{font-size:12px;font-weight:700}.demo-controls .field{margin:8px 0 12px}.demo-controls .textbtn{display:block;text-align:center;padding:12px;text-decoration:none}.demo-controls .caption{margin:4px 0}
 @media(max-height:700px){.demo-bar{margin-top:4px}.demo-bar button{min-height:30px}.demo-bar~#app-root>.apphead{padding-top:12px;padding-bottom:12px;min-height:70px}}
+.demo-login-roles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}.demo-login-roles .caption{grid-column:1/-1;margin:0}.demo-login-roles .secondary{margin:0}.auth-card>.segment{display:none}

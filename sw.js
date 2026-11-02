@@ -1,5 +1,5 @@
-const CACHE='campuspark-74379a204287';
-const FILES=['./','./index.html','./demo.html','./demo.js?v=74379a204287','./demo.css?v=74379a204287','./demo.webmanifest?v=74379a204287','./app.js?v=74379a204287','./styles.css?v=74379a204287','./leaflet.css?v=74379a204287','./icon-180.png?v=dhbw-20261102','./icon-192.png?v=dhbw-20261102','./icon-512.png?v=dhbw-20261102','./manifest.webmanifest?v=74379a204287'];
+const CACHE='campuspark-6eca2b3f81f5';
+const FILES=['./','./index.html','./demo.html','./demo.js?v=6eca2b3f81f5','./demo.css?v=6eca2b3f81f5','./demo.webmanifest?v=6eca2b3f81f5','./app.js?v=6eca2b3f81f5','./styles.css?v=6eca2b3f81f5','./leaflet.css?v=6eca2b3f81f5','./icon-180.png?v=dhbw-20261102','./icon-192.png?v=dhbw-20261102','./icon-512.png?v=dhbw-20261102','./manifest.webmanifest?v=6eca2b3f81f5'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('campuspark-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',e=>{const u=new URL(e.request.url);if(e.request.method!=='GET'||u.origin!==self.location.origin)return;

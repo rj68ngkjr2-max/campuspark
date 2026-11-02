@@ -1,18 +1,20 @@
 // A separate, fictional world. No network, credentials or live storage access.
-export const DEMO_KEY='campuspark.demo.v1';
-export const personas=[{id:'lea',label:'Lea · Nutzerin'},{id:'tom',label:'Tom · Fahrer'},{id:'alex',label:'Alex · Admin'}];
+export const DEMO_KEY='campuspark.demo.v2';
+export const personas=[{id:'lea',label:'Nutzer'},{id:'alex',label:'Admin'}];
+export const DEMO_PASSWORD='CampusDemo2026!';
+const loginAccounts=['lea','alex','campus-test-neu'];
 const copy=value=>JSON.parse(JSON.stringify(value));
 const iso=ms=>new Date(ms).toISOString();
 export function seedDemo(now=Date.now()){
  const tomorrow=new Date(now);tomorrow.setDate(tomorrow.getDate()+1);tomorrow.setHours(8,0,0,0);
  const departure=(minutes=0)=>iso(+tomorrow+minutes*60000);
- const users=[['lea','Lea Winter','LÖ DEMO 1','FR DEMO 2'],['tom','Tom Berger','LÖ DEMO 3'],['alex','Alex Sommer','LÖ DEMO 4'],['nora','Nora Fink','WT DEMO 5'],['sami','Sami Roth','LÖ DEMO 6'],['jules','Jules Neumann','']].map(([id,name,...plates])=>({id,name,email:id+'@campuspark.example.invalid',plates:plates.filter(Boolean),plate:plates[0],is_admin:id==='alex',is_blocked:false,is_approved:id!=='jules',created_at:iso(now-86400000*3),last_sign_in_at:id==='jules'?null:iso(now-3600000)}));
+ const users=[['lea','Lea Winter','LÖ DEMO 1','FR DEMO 2'],['tom','Tom Berger','LÖ DEMO 3'],['alex','Alex Campus','LÖ DEMO 4'],['nora','Nora Fink','WT DEMO 5'],['sami','Sami Roth','LÖ DEMO 6'],['campus-test-neu','campus-test-neu','']].map(([id,name,...plates])=>({id,name,email:id+'@campuspark.example.invalid',plates:plates.filter(Boolean),plate:plates[0],is_admin:id==='alex',is_blocked:false,is_approved:id!=='campus-test-neu',created_at:iso(now-86400000*3),last_sign_in_at:id==='campus-test-neu'?null:iso(now-3600000)}));
  const lots=[['p1','P1 · Parkplatz Nord',60,38,47.61859,7.67750],['p2','P2 · Campusmitte',30,27,47.61728,7.67686],['p3','P3 · Nordost',50,50,47.61867,7.67894],['p4','P4 · Bibliothek',20,8,47.61717,7.67768]].map(([id,name,capacity,base,lat,lng])=>({id,name,capacity,base,lat,lng,active:true,description:'Modellparkfläche · Campus Hangstraße'}));
- const rides=[['r-tom','tom','Weil am Rhein',0,3],['r-nora','nora','Schopfheim',15,2],['r-sami','sami','Rheinfelden (Baden)',30,3],['r-lea','lea','Lörrach',45,2]].map(([id,owner_id,origin,minutes,seats])=>({id,owner_id,origin,destination:'DHBW Lörrach',departure:departure(minutes),seats,cancelled:false}));
- return {version:1,selected:'lea',next:100,users,lots,rides,wanted:[{id:'w1',owner_id:'nora',origin:'Basel',destination:'DHBW Lörrach',departure:departure(20),closed:false},{id:'w2',owner_id:'sami',origin:'Steinen',destination:'DHBW Lörrach',departure:departure(40),closed:false}],parking:[{id:'park-tom',user_id:'tom',lot_id:'p1',plate:'LÖ DEMO 3',started_at:iso(now-1800000),ends_at:iso(now+7200000)}],lastPlates:{},conversations:[{id:'c1',ride_id:'r-tom',passenger_id:'lea',status:'pending',seen:{lea:2,tom:0}},{id:'c2',ride_id:'r-lea',passenger_id:'nora',status:'pending',seen:{}}],messages:[{id:1,conversation_id:'c1',sender_id:'lea',kind:'message',body:'Hallo Tom, kann ich morgen bei dir zum Campus mitfahren?',created_at:iso(now-600000)},{id:2,conversation_id:'c1',sender_id:'tom',kind:'message',body:'Hallo Lea! Klar, wir treffen uns am Bahnhof in Weil am Rhein. Ich bestätige dir den Platz gleich.',created_at:iso(now-300000)},{id:3,conversation_id:'c2',sender_id:'nora',kind:'message',body:'Hallo Lea! Hast du morgen noch einen Platz frei?',created_at:iso(now-120000)}],audit:[]};
+ const rides=[['r-alex','alex','Schopfheim',0,3],['r-tom','tom','Weil am Rhein',15,2],['r-sami','sami','Rheinfelden (Baden)',30,3],['r-nora','nora','Basel',45,2]].map(([id,owner_id,origin,minutes,seats])=>({id,owner_id,origin,destination:'DHBW Lörrach',departure:departure(minutes),seats,cancelled:false}));
+ return {version:2,selected:'lea',next:100,users,lots,rides,wanted:[{id:'w1',owner_id:'nora',origin:'Basel',destination:'DHBW Lörrach',departure:departure(20),closed:false},{id:'w2',owner_id:'sami',origin:'Steinen',destination:'DHBW Lörrach',departure:departure(40),closed:false}],parking:[{id:'park-tom',user_id:'tom',lot_id:'p1',plate:'LÖ DEMO 3',started_at:iso(now-1800000),ends_at:iso(now+7200000)}],lastPlates:{},conversations:[{id:'c-nora',ride_id:'r-nora',passenger_id:'lea',status:'accepted',seen:{lea:2,nora:2}}],messages:[{id:1,conversation_id:'c-nora',sender_id:'lea',kind:'message',body:'Hallo Nora, wo treffen wir uns für die Fahrt?',created_at:iso(now-600000)},{id:2,conversation_id:'c-nora',sender_id:'nora',kind:'message',body:'Direkt am Bahnhof. Bis morgen!',created_at:iso(now-300000)}],audit:[]};
 }
 export function createDemoStore({storage=null,now=()=>Date.now()}={}){
- let data;try{const saved=JSON.parse(storage?.getItem(DEMO_KEY)||'null');if(saved?.version===1&&personas.some(p=>p.id===saved.selected)&&Array.isArray(saved.users))data=saved;}catch{}
+ let data;try{const saved=JSON.parse(storage?.getItem(DEMO_KEY)||'null');if(saved?.version===2&&loginAccounts.includes(saved.selected)&&Array.isArray(saved.users))data=saved;}catch{}
  if(!data)data=seedDemo(now());
  const persist=()=>{try{storage?.setItem(DEMO_KEY,JSON.stringify(data))}catch{/* In-memory operation also works in restricted private browsers. */}};
  const fail=code=>{throw new Error(code)};
@@ -83,7 +85,12 @@ export function createDemoStore({storage=null,now=()=>Date.now()}={}){
  persist();
  return {
   currentUser:()=>copy(user()),
-  select(persona){if(!personas.some(p=>p.id===persona))fail('NOT_FOUND');data.selected=persona;persist();},
+  login(email,password){
+   const target=data.users.find(u=>loginAccounts.includes(u.id)&&u.email.toLowerCase()===String(email).trim().toLowerCase());
+   if(!target||password!==DEMO_PASSWORD)fail('invalid_credentials');
+   if(target.is_blocked)fail('ACCOUNT_BLOCKED');if(!target.is_approved)fail('APPROVAL_REQUIRED');
+   data.selected=target.id;target.last_sign_in_at=iso(now());persist();return copy(target);
+  },
   reset(){data=seedDemo(now());persist();},
   async api(action,p={}){const before=copy(data);try{const result=execute(action,p);if(/^admin(Save|Block|Approve|Checkout)/.test(action))data.audit.push({id:id('audit'),action,actor_name:user().name,target_id:p.id,created_at:iso(now()),details:p});persist();return copy(result);}catch(e){data=before;throw e;}}
  };

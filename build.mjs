@@ -7,7 +7,11 @@ await build({...options,entryPoints:['source-app.js'],outfile:'app.js'});
 // Compile the same UI against a local adapter. Supabase never enters the demo graph.
 const demoBuild=await build({...options,entryPoints:['demo-entry.js'],outfile:'demo.js',metafile:true,plugins:[{name:'isolated-demo',setup(b){
  b.onResolve({filter:/^\.\/backend\.js$/},()=>({path:resolve('demo-backend.js')}));
- b.onLoad({filter:/source-app\.js$/},async a=>({contents:(await readFile(a.path,'utf8')).replaceAll('campuspark.theme','campuspark.demo.theme'),loader:'js'}));
+ b.onLoad({filter:/source-app\.js$/},async a=>({contents:(await readFile(a.path,'utf8')).replaceAll('campuspark.theme','campuspark.demo.theme')
+  .replace("[['login','Anmelden'],['register','Registrieren']]","[['login','Anmelden']]")
+  .replace('Neue Konten werden vor dem ersten Login von der Administration freigeschaltet. Studien-Demo ohne E-Mail-Bestätigung.','Das vorbereitete neue Testkonto benötigt zuerst die Freigabe durch den Demo-Admin.')
+  .replace('Konten und Daten werden bei Supabase gespeichert.','Demo-Anmeldung und Freigaben werden nur in diesem Browser simuliert.')
+  .replace('<a class="secondary demo-entry" href="./demo.html">Demo-Version ausprobieren</a><p class="caption demo-entry-note">Ohne Anmeldung · mit erfundenen Beispieldaten</p>',''),loader:'js'}));
 }}]});
 if(Object.keys(demoBuild.metafile.inputs).some(f=>/supabase|auth-storage|(^|\/)config\.js$|(^|\/)backend\.js$/.test(f)))throw new Error('Live dependency found in demo');
 const html=await readFile('source-index.html','utf8'),hash=createHash('sha256').update(html);
