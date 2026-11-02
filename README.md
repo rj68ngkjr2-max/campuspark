@@ -57,8 +57,10 @@ Statusleiste: `black-translucent`, `viewport-fit=cover`, Theme-Hintergrund berei
 
 ## Bedienungs- und Layoutkorrekturen
 
-Karten-Gesten sind auf den Kartenbereich begrenzt (`touch-action: none` und lokale Touch-/Safari-Gestenbehandlung). Die Navigation bleibt bei Aktualisierungen im DOM; die Auswahlblase folgt dem Finger ohne Positionsanimation. Sechs Gesten-Regressionsfälle prüfen unter anderem wiederholte Drags, Pointer-Abbruch, Begrenzung und doppelte Klicks. Auslastungskarten haben eigene Innenabstände. Datumsfelder sind in allen Formularen auf die verfügbare Breite begrenzt; Einstellungen haben getrennte Abstände. Die Begrüßungszeile verwendet eine größere Schrift mit ganzzahliger Zeilenhöhe.
+Karten-Gesten sind auf den Kartenbereich begrenzt (`touch-action: none` und lokale Touch-/Safari-Gestenbehandlung). Die Navigation bleibt bei Aktualisierungen im DOM; die Auswahlblase folgt dem Finger ohne Positionsanimation. Elf Gesten-Regressionsfälle prüfen unter anderem wiederholte Drags, Pointer-Abbruch, Begrenzung und doppelte Klicks. Auslastungskarten haben eigene Innenabstände. Datumsfelder sind in allen Formularen auf die verfügbare Breite begrenzt; Einstellungen haben getrennte Abstände. Die Begrüßungszeile verwendet eine größere Schrift mit ganzzahliger Zeilenhöhe.
 
 ## App-Icon
 
 Das Icon verbindet das bereitgestellte DHBW-Zeichen mit einem weißen Park-P auf dunklem Hintergrund. Es wird auf dem Homescreen, als Favicon, auf der Anmeldung und im App-Kopf verwendet. PNG-Exporte: 180, 192 und 512 Pixel. Versionsparameter erneuern Browser- und PWA-Assets; das von iOS separat gespeicherte Homescreen-Icon kann eine erneute Installation erfordern. Der Header hat 32 Pixel oberen Innenabstand zusätzlich zur Safe Area (10 Pixel mehr als zuvor).
+
+Beim Loslassen bleibt die Glasfläche sichtbar und gleitet in 240 ms zur ausgewählten Schaltfläche. Eine neue Berührung währenddessen setzt an der sichtbaren Position an. Reduzierte Bewegung deaktiviert diesen Übergang.

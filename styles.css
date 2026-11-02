@@ -363,3 +363,9 @@ input.field::-webkit-datetime-edit{min-width:0;padding:0}
 .brand-inline img{display:block;width:20px;height:20px;border-radius:5px}
 .welcome .biglogo{width:96px;height:96px;border-radius:24px;transform:none;background:#171419;overflow:hidden;box-shadow:0 12px 26px rgba(72,18,31,.18)}
 .welcome .biglogo img{display:block;width:100%;height:100%;object-fit:cover}
+
+/* Keep the same glass surface visible while it settles into the selected tab. */
+#bottom .tabbar:before{background:rgba(120,110,123,.13);box-shadow:inset 0 1px 1px #ffffff40}
+#phone.dark #bottom .tabbar:before{background:rgba(255,255,255,.12)}
+#bottom .tabbar.is-settling:before{transition:transform 240ms cubic-bezier(.22,1,.36,1),width 240ms cubic-bezier(.22,1,.36,1)}
+@media(prefers-reduced-motion:reduce){#bottom .tabbar.is-settling:before{transition:none}}
