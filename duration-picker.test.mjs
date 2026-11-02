@@ -1,0 +1,2 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import {durationMinutes} from './duration-picker.js';
+test('wheel selection uses whole minutes within the supported parking range',()=>{assert.equal(durationMinutes(2,17),137);assert.equal(durationMinutes(0,0),1);assert.equal(durationMinutes(0,59),59);assert.equal(durationMinutes(12,59),720);assert.equal(durationMinutes(12,0),720)});

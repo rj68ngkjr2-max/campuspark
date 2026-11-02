@@ -117,3 +117,11 @@ Die Ortsauswahl in Angeboten, Gesuchen und Suche verlangt bei nichtleeren Eingab
 Die App-Hülle nutzt die dynamische Viewport-Höhe; der sichere untere Rand wird einmal berücksichtigt. Tastaturerkennung behandelt sowohl überlagernde als auch verkleinernde Bildschirmtastaturen. Browserprüfung bei 360×640, 390×844 und 430×932, zusätzlich verkleinerte Höhe bei fokussiertem Eingabefeld. Kein Ersatz für einen Test auf physischen iOS-/Android-Geräten.
 
 Validierung dieser Erweiterung: 68 Tests insgesamt (17 Datenbank, 15 Administration, 10 Freigabe, 15 Gesten, 8 Fahrzeuge, 3 Ortsauswahl).
+
+## Aktiver Parkvorgang und individuelle Dauer
+
+Die aktive Parkansicht füllt die verfügbare Bildschirmhöhe ohne Scrollen. Erst die aufgeklappte Auslastung aktiviert den Scrollbereich. Der zusätzliche Hinweisbalken entfällt. Stunden und Minuten lassen sich über zwei einrastende Drehräder wählen (1–720 Minuten, Tastaturbedienung ebenfalls möglich). `migration-parking-duration.sql` aktiviert die individuelle Dauer in bestehenden Installationen; Schema und vorherige Migrationen enthalten sie ebenfalls.
+
+Ein Swipe über mindestens 85 Prozent des Auscheck-Reglers beendet den Vorgang direkt. Kurze oder abgebrochene Gesten setzen ihn zurück. Während der Anfrage werden weitere Auscheck-Versuche unterdrückt; bei Fehlern bleibt ein erneuter Versuch möglich. Der alternative Textbutton behält seine Bestätigungsabfrage. Schieberradius 26 Pixel bei Container-Radius 31 Pixel und 5 Pixel Innenabstand.
+
+Validierung: 71 Tests, Browserprüfung der ein- und aufgeklappten Ansicht, individuelle Dauer sowie kurzer und vollständiger Auscheck-Swipe.
