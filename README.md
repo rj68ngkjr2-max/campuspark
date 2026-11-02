@@ -125,3 +125,11 @@ Die aktive Parkansicht füllt die verfügbare Bildschirmhöhe ohne Scrollen. Ers
 Ein Swipe über mindestens 85 Prozent des Auscheck-Reglers beendet den Vorgang direkt. Kurze oder abgebrochene Gesten setzen ihn zurück. Während der Anfrage werden weitere Auscheck-Versuche unterdrückt; bei Fehlern bleibt ein erneuter Versuch möglich. Der alternative Textbutton behält seine Bestätigungsabfrage. Schieberradius 26 Pixel bei Container-Radius 31 Pixel und 5 Pixel Innenabstand.
 
 Validierung: 71 Tests, Browserprüfung der ein- und aufgeklappten Ansicht, individuelle Dauer sowie kurzer und vollständiger Auscheck-Swipe.
+
+## Unterer Rand bei Home-Bildschirm-Installationen
+
+Die veraltete Apple-Metadaten-Einstellung `apple-mobile-web-app-status-bar-style=black-translucent` entfällt. WebKit empfiehlt ihre Entfernung und dokumentiert unterschiedliche App-Geometrie je nach Installationszeitpunkt: https://bugs.webkit.org/show_bug.cgi?id=317153 (der gemeldete iOS-27-Beta-Fehler wurde als behoben geschlossen). Der allgemeinere Bericht https://bugs.webkit.org/show_bug.cgi?id=313800 ist noch offen; eine OS-seitig abgeschnittene Zeichenfläche kann CSS nicht erweitern.
+
+Installierte Fenster werden über `display-mode: standalone` bzw. `navigator.standalone` erkannt. Nur dort füllt die App mit `position:fixed; inset:0; height:auto` den bereitgestellten Bereich, ohne die Höhe ausschließlich von `100dvh` abzuleiten. Der normale Browser behält seine dynamische Höhe. Kein pauschales Addieren von Statusleistenhöhen oder Bildschirmmaßen, keine Änderungen an den Sicherheitsabständen. Hintergrund und Theme-Farbe bleiben konsistent.
+
+Geprüft mit einer lokalen Simulation einer um 62 Pixel zu kleinen dynamischen Höhe. Das ersetzt nicht die Prüfung auf dem betroffenen Handy. Persistiert die Installations-Geometrie, kann nach einem OS-Update eine erneute Home-Bildschirm-Installation nötig sein.
