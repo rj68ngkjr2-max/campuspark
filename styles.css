@@ -376,3 +376,26 @@ input.field::-webkit-datetime-edit{min-width:0;padding:0}
 .admin-item{padding:18px;margin:14px 0;min-width:0}.admin-item-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.admin-item h3{font-size:17px;line-height:1.35;margin:0;overflow-wrap:anywhere}.admin-item p{font-size:13px;line-height:1.55;color:var(--muted);overflow-wrap:anywhere}.admin-item .pill{flex-shrink:0}.admin-item dl{margin:14px 0}.admin-item dl>div{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 12px;font-size:12px;line-height:1.5;padding:5px 0}.admin-item dt{color:var(--muted)}.admin-item dd{margin:0;overflow-wrap:anywhere}.admin-actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px}.admin-actions button{flex:1;min-width:105px}.admin-search .primary{margin-top:12px}.admin-pager{display:flex;gap:12px;align-items:center;margin:20px 0}.admin-pager button{width:auto;flex:1}.admin-pager span{font-size:12px;white-space:nowrap}.admin-block-reason{padding:10px 12px;background:var(--blue-veil);border-radius:12px}.admin-id{word-break:break-all}.admin-coordinates{min-width:0}
 
 .admin-sections button:last-child:nth-child(odd){grid-column:1/-1}.approval-note{margin:0 0 18px;font-size:14px;line-height:1.6}
+
+/* Message bubbles need their own flex container, inside the scrolling history. */
+#message-list{display:flex;flex-direction:column;gap:12px;min-width:0;width:100%;flex-shrink:0}
+#message-list .message{width:fit-content;max-width:85%;font-size:14px;line-height:1.5;margin:0}
+#message-list .message.me{align-self:flex-end;margin-left:auto}
+#message-list .message.other{align-self:flex-start;margin-right:auto}
+#message-list .message.system{align-self:center;margin:6px auto;font-size:12px}
+#message-list .message small{font-size:10px}
+/* Anchor the app to the current viewport, including browsers with collapsing chrome. */
+#phone{position:fixed;bottom:auto;height:100dvh}
+.place-picker{position:relative;min-width:0}
+.place-results{position:relative;border:1px solid var(--line);border-radius:14px;overflow:auto;max-height:240px;margin:6px 0 10px;background:var(--paper);overscroll-behavior:contain}
+.place-results button{display:block;text-align:left;width:100%;min-height:54px;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--ink);padding:11px 13px}
+.place-results button:last-child{border-bottom:0}
+.place-results button[aria-selected="true"],.place-results button:active{background:var(--soft)}
+.place-results strong,.place-results small{display:block;overflow-wrap:anywhere}
+.place-results strong{font-size:14px}.place-results small{font-size:11px;color:var(--muted);margin-top:3px}
+.place-status:empty{display:none}.place-status{margin:6px 0 12px}
+.place-credit{font-size:10px;color:var(--muted);margin:12px 0;line-height:1.5}.place-credit a{color:inherit}
+.parking-summary{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 18px;padding:16px 18px}.parking-summary strong{font-size:23px;display:block;letter-spacing:-.04em}.parking-summary span{font-size:12px;color:var(--muted)}
+.lot-list .occupancy-card{margin:0 0 12px}.plate-help{font-size:12px;color:var(--muted);line-height:1.5}
+
+.parking-other{margin-top:22px}.parking-other>summary{padding:14px 0;min-height:44px;font-size:14px;font-weight:650;cursor:pointer}

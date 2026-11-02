@@ -1,0 +1,5 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';
+import {localSuggestions,photonPlaces,placeField} from './places.js';
+test('DHBW is suggested for campus, Loerrach and DHBW queries',()=>{for(const q of ['DHBW','Lörrach','Loerrach','Hangstrasse'])assert(localSuggestions(q).some(p=>p.id==='campus:dhbw-loerrach'))});
+test('remote results are canonicalized, deduplicated and capped to stored route length',()=>{const f=(name,id,extra={})=>({properties:{name,osm_id:id,osm_type:'N',countrycode:'DE',...extra}});const r=photonPlaces({features:[f('Lörrach',1),f('Lörrach',2),f('Bahnhof',3,{city:'Steinen'}),f('x'.repeat(71),4),f('',5)]});assert.equal(r.length,2);assert.equal(r[0].label,'Lörrach');assert.equal(r[1].label,'Bahnhof, Steinen')});
+test('prefilled campus is selected but unknown text still needs a suggestion',()=>{assert(placeField('destination','Ziel','DHBW Lörrach').includes('data-place-id="campus:dhbw-loerrach"'));assert(placeField('origin','Start','Typoo').includes('data-place-id=""'));assert(!placeField('origin','Start','<script>').includes('value="<script>'))});

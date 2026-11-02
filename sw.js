@@ -1,5 +1,5 @@
-const CACHE='campuspark-3a30c670cc45';
-const FILES=['./','./index.html','./app.js?v=3a30c670cc45','./styles.css?v=3a30c670cc45','./leaflet.css?v=3a30c670cc45','./icon-180.png?v=dhbw-20261102','./icon-192.png?v=dhbw-20261102','./icon-512.png?v=dhbw-20261102','./manifest.webmanifest?v=3a30c670cc45'];
+const CACHE='campuspark-052bb745bb3b';
+const FILES=['./','./index.html','./app.js?v=052bb745bb3b','./styles.css?v=052bb745bb3b','./leaflet.css?v=052bb745bb3b','./icon-180.png?v=dhbw-20261102','./icon-192.png?v=dhbw-20261102','./icon-512.png?v=dhbw-20261102','./manifest.webmanifest?v=052bb745bb3b'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('campuspark-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',e=>{const u=new URL(e.request.url);if(e.request.method!=='GET'||u.origin!==self.location.origin)return;

@@ -57,7 +57,7 @@ Statusleiste: `black-translucent`, `viewport-fit=cover`, Theme-Hintergrund berei
 
 ## Bedienungs- und Layoutkorrekturen
 
-Karten-Gesten sind auf den Kartenbereich begrenzt (`touch-action: none` und lokale Touch-/Safari-Gestenbehandlung). Die Navigation bleibt bei Aktualisierungen im DOM; die Auswahlblase folgt dem Finger ohne Positionsanimation. 14 Gesten-Regressionsfälle prüfen unter anderem wiederholte Drags, Pointer-Abbruch, Begrenzung und doppelte Klicks. Auslastungskarten haben eigene Innenabstände. Datumsfelder sind in allen Formularen auf die verfügbare Breite begrenzt; Einstellungen haben getrennte Abstände. Die Begrüßungszeile verwendet eine größere Schrift mit ganzzahliger Zeilenhöhe.
+Karten-Gesten sind auf den Kartenbereich begrenzt (`touch-action: none` und lokale Touch-/Safari-Gestenbehandlung). Die Navigation bleibt bei Aktualisierungen im DOM; die Auswahlblase folgt dem Finger ohne Positionsanimation. 15 Gesten-Regressionsfälle prüfen unter anderem wiederholte Drags, Pointer-Abbruch, Begrenzung und doppelte Klicks. Auslastungskarten haben eigene Innenabstände. Datumsfelder sind in allen Formularen auf die verfügbare Breite begrenzt; Einstellungen haben getrennte Abstände. Die Begrüßungszeile verwendet eine größere Schrift mit ganzzahliger Zeilenhöhe.
 
 ## App-Icon
 
@@ -86,7 +86,7 @@ Sperren gelten für alle CampusPark-Datenzugriffe, auch mit bestehenden Sessions
 
 Parkflächen werden deaktiviert statt gelöscht, sodass Historien und laufende Parkvorgänge erhalten bleiben. Kapazitäten können nicht unter die aktuelle Belegung abgesenkt werden. Admins sehen E-Mail, Anzeigename, Kennzeichen, Registrierungs-/Anmeldezeit und Sperrstatus, keine Passwörter und keine fremden Chat-Inhalte.
 
-Validierung: 17 bisherige Datenbanktests, 15 Admin-/Berechtigungstests, 10 Freigabe-/Auth-Hook-Tests, 14 Gestentests. Referenzen: [Supabase-Funktionsberechtigungen](https://supabase.com/docs/guides/database/functions), [Supabase RLS](https://supabase.com/docs/guides/database/postgres/row-level-security).
+Validierung: 17 bisherige Datenbanktests, 15 Admin-/Berechtigungstests, 10 Freigabe-/Auth-Hook-Tests, 15 Gestentests. Referenzen: [Supabase-Funktionsberechtigungen](https://supabase.com/docs/guides/database/functions), [Supabase RLS](https://supabase.com/docs/guides/database/postgres/row-level-security).
 
 ## Freigabe neuer Registrierungen
 
@@ -103,3 +103,17 @@ Nach Beginn einer Wischgeste folgt die Glasfläche der horizontalen Fingerbewegu
 Neue Registrierungen erhalten sofort einen ausstehenden Eintrag in `campus.account_access`. Für bestehende Installationen ergänzt `migration-registration.sql` fehlende Einträge ohne Freigaben oder Rollen zu ändern. Die Administration lädt ihre Liste alle zehn Sekunden sowie nach Rückkehr in die App nach; offene Formulare bleiben erhalten. Beim Wechsel des Verwaltungsbereichs wird ein alter Suchfilter zurückgesetzt.
 
 Die E-Mail-Adresse steht in der Admin-Nutzerliste direkt als Überschrift. In Supabase zeigt die ausschließlich für die Datenbankverwaltung lesbare Ansicht `campus.pending_registrations` ausstehende Registrierungen mit E-Mail, Datum und Status. Die Freigabe erfolgt in der App unter Profil → Administration → Freigaben.
+
+## Parken, Fahrzeuge, Chat und Ortsauswahl
+
+Die Hauptnavigation besteht aus Parken, Mitfahrten, Chats und Profil. Parken kombiniert Karte, Auslastung und Check-in. Während eines Parkvorgangs stehen Restzeit und Auschecken im Vordergrund; die übrigen Parkflächen bleiben aufklappbar.
+
+`migration-vehicles.sql` ergänzt maximal zwei Kennzeichen pro Profil und speichert das beim Check-in gewählte Kennzeichen am Parkvorgang. Bestehende Kennzeichen bleiben erhalten. Das zuletzt benutzte Auto wird vorausgewählt, sofern es noch im Profil vorhanden ist. Profiländerungen verändern keine laufenden Parkvorgänge. Die vollständige Installation und die bestehenden Admin-/Freigabe-Migrationen enthalten die Erweiterung ebenfalls.
+
+Eigene Chatnachrichten stehen rechts, fremde links, Systemnachrichten mittig; die Nachrichtenliste hat 12 Pixel Abstand zwischen den Sprechblasen.
+
+Die Ortsauswahl in Angeboten, Gesuchen und Suche verlangt bei nichtleeren Eingaben eine Auswahl aus Vorschlägen. DHBW Lörrach (Campus Hangstraße) und häufige regionale Orte sind lokal verfügbar. Online-Vorschläge kommen von [Photon](https://github.com/komoot/photon): 500 ms Verzögerung, Cache, Abbruch veralteter Anfragen, begrenzte Trefferzahl und explizite Offline-Meldung. Nur der eingegebene Suchbegriff wird übertragen, keine Profil- oder GPS-Daten. Der öffentliche Photon-Dienst ist für diese Studien-Demo geeignet, bietet aber keine Verfügbarkeitsgarantie; bei größerem Betrieb einen eigenen Dienst einsetzen. [DHBW-Adresse](https://dhbw-loerrach.de/kontakt/zentraler-kontakt/).
+
+Die App-Hülle nutzt die dynamische Viewport-Höhe; der sichere untere Rand wird einmal berücksichtigt. Tastaturerkennung behandelt sowohl überlagernde als auch verkleinernde Bildschirmtastaturen. Browserprüfung bei 360×640, 390×844 und 430×932, zusätzlich verkleinerte Höhe bei fokussiertem Eingabefeld. Kein Ersatz für einen Test auf physischen iOS-/Android-Geräten.
+
+Validierung dieser Erweiterung: 68 Tests insgesamt (17 Datenbank, 15 Administration, 10 Freigabe, 15 Gesten, 8 Fahrzeuge, 3 Ortsauswahl).

@@ -1,1 +1,17 @@
-{"name":"campuspark","version":"1.0.0","private":true,"type":"module","scripts":{"build":"node build.mjs","test":"node --test database.test.mjs admin.test.mjs approval.test.mjs gestures.test.mjs"},"dependencies":{"@supabase/supabase-js":"^2.0.0"},"devDependencies":{"@electric-sql/pglite":"^0.3.0","esbuild":"^0.25.0"}}
+{
+  "name": "campuspark",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "node --test database.test.mjs admin.test.mjs approval.test.mjs gestures.test.mjs vehicles.test.mjs places.test.mjs"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.0.0"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.3.0",
+    "esbuild": "^0.25.0"
+  }
+}
