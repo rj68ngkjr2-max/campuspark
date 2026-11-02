@@ -98,4 +98,4 @@ Admins geben Konten unter **Profil → Administration → Freigaben** frei. Frei
 
 Die E-Mail-Bestätigung bleibt für diese Studien-Demo wie vereinbart deaktiviert. Supabase speichert die Registrierung vor der anschließenden Token-Ausgabe; ein wegen ausstehender Freigabe verweigerter Token verhindert deshalb nicht, dass das neue Konto in der Verwaltung erscheint. Die App zeigt in diesem Fall den Freigabehinweis.
 
-Verlässt der Finger beim Wischen den Trefferbereich der Menüleiste, bleiben Glasposition und zuletzt berührter Menüpunkt erhalten. Loslassen außerhalb wählt diesen Punkt mit dem weichen Übergang aus; erneutes Hineinziehen setzt die Verfolgung fort. Ein tatsächlicher Pointer-Abbruch wählt weiterhin nichts aus.
+Nach Beginn einer Wischgeste folgt die Glasfläche der horizontalen Fingerbewegung auch oberhalb und unterhalb der Menüleiste. Beim Loslassen wird der zur horizontalen Position passende Menüpunkt mit dem weichen Übergang ausgewählt. Seitlich außerhalb wird auf den ersten bzw. letzten Menüpunkt begrenzt. Ein tatsächlicher Pointer-Abbruch wählt weiterhin nichts aus.
