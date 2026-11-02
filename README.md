@@ -86,7 +86,7 @@ Sperren gelten für alle CampusPark-Datenzugriffe, auch mit bestehenden Sessions
 
 Parkflächen werden deaktiviert statt gelöscht, sodass Historien und laufende Parkvorgänge erhalten bleiben. Kapazitäten können nicht unter die aktuelle Belegung abgesenkt werden. Admins sehen E-Mail, Anzeigename, Kennzeichen, Registrierungs-/Anmeldezeit und Sperrstatus, keine Passwörter und keine fremden Chat-Inhalte.
 
-Validierung: 17 bisherige Datenbanktests, 15 Admin-/Berechtigungstests, 9 Freigabe-/Auth-Hook-Tests, 14 Gestentests. Referenzen: [Supabase-Funktionsberechtigungen](https://supabase.com/docs/guides/database/functions), [Supabase RLS](https://supabase.com/docs/guides/database/postgres/row-level-security).
+Validierung: 17 bisherige Datenbanktests, 15 Admin-/Berechtigungstests, 10 Freigabe-/Auth-Hook-Tests, 14 Gestentests. Referenzen: [Supabase-Funktionsberechtigungen](https://supabase.com/docs/guides/database/functions), [Supabase RLS](https://supabase.com/docs/guides/database/postgres/row-level-security).
 
 ## Freigabe neuer Registrierungen
 
@@ -101,3 +101,5 @@ Die E-Mail-Bestätigung bleibt für diese Studien-Demo wie vereinbart deaktivier
 Nach Beginn einer Wischgeste folgt die Glasfläche der horizontalen Fingerbewegung auch oberhalb und unterhalb der Menüleiste. Beim Loslassen wird der zur horizontalen Position passende Menüpunkt mit dem weichen Übergang ausgewählt. Seitlich außerhalb wird auf den ersten bzw. letzten Menüpunkt begrenzt. Ein tatsächlicher Pointer-Abbruch wählt weiterhin nichts aus.
 
 Neue Registrierungen erhalten sofort einen ausstehenden Eintrag in `campus.account_access`. Für bestehende Installationen ergänzt `migration-registration.sql` fehlende Einträge ohne Freigaben oder Rollen zu ändern. Die Administration lädt ihre Liste alle zehn Sekunden sowie nach Rückkehr in die App nach; offene Formulare bleiben erhalten. Beim Wechsel des Verwaltungsbereichs wird ein alter Suchfilter zurückgesetzt.
+
+Die E-Mail-Adresse steht in der Admin-Nutzerliste direkt als Überschrift. In Supabase zeigt die ausschließlich für die Datenbankverwaltung lesbare Ansicht `campus.pending_registrations` ausstehende Registrierungen mit E-Mail, Datum und Status. Die Freigabe erfolgt in der App unter Profil → Administration → Freigaben.
