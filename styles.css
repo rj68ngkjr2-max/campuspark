@@ -180,7 +180,7 @@ button{touch-action:manipulation}
  .field,.chat-compose textarea,input,select,textarea{font-size:16px!important}
  .code-input{font-size:27px!important}
  .swipe{touch-action:pan-y}
- #campus-realmap,.leaflet-container{touch-action:pan-x pan-y}
+ #campus-realmap{touch-action:none;overscroll-behavior:contain}
 }
 @media (max-width:375px){
  .tabbar{left:calc(7px + env(safe-area-inset-left,0px));right:calc(7px + env(safe-area-inset-right,0px))}
@@ -266,7 +266,7 @@ html.keyboard-open #bottom{display:none}
 /* The native status-bar text is white in translucent standalone mode. */
 @media(display-mode:standalone){html[data-campus-theme="light"] #phone{background:linear-gradient(#6f2137 0 var(--safe-top),var(--shell-bg) var(--safe-top) 100%)}}
 /* Real map: its pane z-indices stay below navigation and modal sheets. */
-.campus-map{height:300px;width:100%;isolation:isolate;z-index:0;background:#e6ebdf;font-family:inherit;touch-action:pan-x pan-y}
+.campus-map{height:300px;width:100%;isolation:isolate;z-index:0;background:#e6ebdf;font-family:inherit;touch-action:none;overscroll-behavior:contain}
 .mapcard{flex-shrink:0}
 .map-status{font-size:12px;line-height:1.45;padding:8px 14px;color:var(--muted);background:var(--soft)}
 .map-error{color:var(--red)}
@@ -314,3 +314,46 @@ html.keyboard-open #phone:has(.tabbar) #app-root>.chat-screen{padding-bottom:0}
 @media(max-width:360px){.sheet-header{padding-left:16px;padding-right:16px}.sheet-body{padding-left:16px;padding-right:16px}.sheet-top h3{font-size:20px}#bottom .tabbar{left:10px;right:10px}}
 
 .toast{top:calc(12px + var(--safe-top));font-size:13px;line-height:1.45;padding:12px 16px}
+
+/* Gesture feedback follows the pointer directly; no interpolation from an old tab. */
+#bottom .tabbar:before{transition:none}
+#bottom .tabbar .tab,#bottom .tabbar .tab:active{transform:none;transition:color .12s}
+#bottom .tabbar.is-scrubbing .tab.active,#phone.dark #bottom .tabbar.is-scrubbing .tab.active{background:transparent;box-shadow:none}
+/* Readable heading, with no small/fractional line boxes or compositing effects. */
+.apphead{align-items:flex-start}
+.apphead>.glass-button{align-self:center;flex-shrink:0}
+.headingtext{min-width:0}
+.headingtext .hint{font-size:13px;line-height:18px;font-weight:500;letter-spacing:0;margin-bottom:4px;gap:7px;color:#60616a;-webkit-font-smoothing:auto}
+.phone.dark .headingtext .hint{color:#c8bec6}
+.headingtext .hint>span:last-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.headingtext h2{line-height:34px}
+.brand-inline{flex-shrink:0;margin:0;font-size:11px;font-weight:750;letter-spacing:0}
+/* Occupancy cards use one inset surface, not a bordered row inside a tight card. */
+.occupancy-card{padding:18px;margin-bottom:14px}
+.occupancy-card .lot-item{display:grid;grid-template-columns:44px minmax(0,1fr) 18px;column-gap:12px;row-gap:10px;padding:0;min-height:0;border:0;border-radius:0;background:none;box-shadow:none}
+.occupancy-card .lot-icon{display:grid;grid-column:1;grid-row:1;width:44px;height:44px;border-radius:14px;align-self:start}
+.occupancy-card .lot-copy{grid-column:2;grid-row:1;min-width:0}
+.occupancy-card .lot-name{font-size:14px;line-height:1.4}
+.occupancy-card .lot-copy small{font-size:12px;line-height:1.5;margin-top:5px}
+.occupancy-card .lot-right{grid-column:2;grid-row:2;display:flex;flex-direction:row;flex-wrap:wrap;gap:6px 12px;align-items:baseline;margin:0;text-align:left;white-space:normal}
+.occupancy-card .lot-count{font-size:13px}
+.occupancy-card .lot-percent{margin:0;font-size:12px}
+.occupancy-card .chev{grid-column:3;grid-row:1 / span 2;margin:0;align-self:center}
+.occupancy-card .availability-track{height:8px;margin:18px 0 0}
+.status-overview{padding:20px;gap:16px;margin:8px 0 22px}
+.status-overview>div:last-child{min-width:0}
+.status-overview .kicker{margin-bottom:6px;font-size:10px;letter-spacing:.07em}
+.status-overview h3{font-size:20px;line-height:1.25;margin-bottom:8px}
+@media(max-width:360px){.status-overview{padding:16px;gap:12px}.status-overview .ring{width:68px;height:68px}.status-overview .ring-inner{width:52px;height:52px;font-size:16px}.status-overview h3{font-size:18px}.occupancy-card{padding:16px}.occupancy-card .lot-item{column-gap:10px}}
+/* Constrain Safari date controls in every form, including the main offer page. */
+.form-card,form,.route-stack{min-width:0;max-width:100%}
+.field{display:block;min-width:0;max-width:100%;box-sizing:border-box}
+input.field[type=date],input.field[type=datetime-local]{appearance:none;-webkit-appearance:none;display:block;width:100%;min-width:0;max-width:100%;text-align:left;min-height:50px}
+input.field::-webkit-date-and-time-value{text-align:left;min-height:1.3em}
+input.field::-webkit-datetime-edit{min-width:0;padding:0}
+.settings-card>.fieldlabel{margin-top:0}
+.settings-card>#theme{margin-bottom:20px}
+.settings-card>.textbtn{display:block;width:100%;margin-top:8px;min-height:44px}
+/* Loading/error messages must not change page height during a map gesture. */
+.mapcard{position:relative}
+.map-status{position:absolute;z-index:2;top:12px;left:58px;right:12px;padding:8px 10px;border-radius:12px;background:var(--paper);box-shadow:0 2px 12px #0002;pointer-events:none}

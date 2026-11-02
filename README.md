@@ -54,3 +54,7 @@ Technische Referenzen: [Supabase Database Functions](https://supabase.com/docs/g
 ## iPhone-Layout
 
 Statusleiste: `black-translucent`, `viewport-fit=cover`, Theme-Hintergrund bereits vor dem ersten App-Render. Schwebende, abgerundete Glas-Navigation über dem Inhalt; unterer Sicherheitsabstand wird nur einmal berücksichtigt. Der Glas-Effekt ist eine Web-Nachbildung mit Blur, Transparenz und Kontrast-Fallbacks, kein natives UIKit-Material. Overlays haben einen festen Kopf mit 44px-Schließtaste und einen getrennt scrollenden Inhalt; die sichtbare Bildschirmhöhe wird bei geöffneter Tastatur berücksichtigt. Nach Änderung der Installationsmetadaten kann eine erneute Homescreen-Installation nötig sein.
+
+## Bedienungs- und Layoutkorrekturen
+
+Karten-Gesten sind auf den Kartenbereich begrenzt (`touch-action: none` und lokale Touch-/Safari-Gestenbehandlung). Die Navigation bleibt bei Aktualisierungen im DOM; die Auswahlblase folgt dem Finger ohne Positionsanimation. Sechs Gesten-Regressionsfälle prüfen unter anderem wiederholte Drags, Pointer-Abbruch, Begrenzung und doppelte Klicks. Auslastungskarten haben eigene Innenabstände. Datumsfelder sind in allen Formularen auf die verfügbare Breite begrenzt; Einstellungen haben getrennte Abstände. Die Begrüßungszeile verwendet eine größere Schrift mit ganzzahliger Zeilenhöhe.

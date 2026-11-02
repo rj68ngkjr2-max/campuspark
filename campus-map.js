@@ -1,11 +1,16 @@
 import {map,tileLayer,marker,divIcon,latLngBounds} from './leaflet.js';
 // Approximate study-model positions from the supplied CampusPark prototype.
 const positions={p1:[47.61859,7.67750],p2:[47.61728,7.67686],p3:[47.61867,7.67894],p4:[47.61717,7.67768]};
-let current=null,observer=null,timer=null;
-export function unmountCampusMap(){observer?.disconnect();observer=null;clearTimeout(timer);current?.remove();current=null;}
+let current=null,observer=null,timer=null,touchGuard=null;
+export function unmountCampusMap(){touchGuard?.abort();touchGuard=null;observer?.disconnect();observer=null;clearTimeout(timer);current?.remove();current=null;}
 export function mountCampusMap(lots,onSelect){
  const element=document.getElementById('campus-realmap');if(!element)return;
  unmountCampusMap();
+ // Map gestures must not start native page scrolling or Safari page zoom.
+ // Do not stop propagation: Leaflet still needs the touch/pointer stream.
+ touchGuard=new AbortController();
+ const preventNative=e=>{if(e.cancelable)e.preventDefault()};
+ for(const event of ['touchmove','gesturestart','gesturechange'])element.addEventListener(event,preventNative,{passive:false,signal:touchGuard.signal});
  const status=document.getElementById('map-status');
  const report=(text,error=false)=>{if(!status?.isConnected)return;status.textContent=text;status.hidden=!text;status.classList.toggle('map-error',error)};
  const instance=map(element,{scrollWheelZoom:false,zoomControl:true,minZoom:3,maxZoom:19});current=instance;

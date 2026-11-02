@@ -55,13 +55,23 @@ export function installCardSwipe(card,{onDecision,disabled=()=>false}){
 }
 export function installTabScrub(nav,onSelect){
  const controller=new AbortController(),options={signal:controller.signal};let gesture=null;
- const clear=()=>{gesture=null;nav.classList.remove('is-scrubbing');nav.querySelectorAll('.scrub-target').forEach(b=>b.classList.remove('scrub-target'));};
- const highlight=target=>{nav.querySelectorAll('.scrub-target').forEach(b=>b.classList.remove('scrub-target'));if(!target)return;target.classList.add('scrub-target');const r=target.getBoundingClientRect(),n=nav.getBoundingClientRect();nav.style.setProperty('--scrub-x',r.left-n.left+'px');nav.style.setProperty('--scrub-width',r.width+'px');};
+ const buttons=()=>[...nav.querySelectorAll('button[data-route]')];
+ const targetAt=(x,y)=>{const tabs=buttons(),rects=tabs.map(b=>b.getBoundingClientRect());if(!rects.length||x<rects[0].left||x>rects.at(-1).right||y<rects[0].top-12||y>rects[0].bottom+12)return null;return tabs[rects.reduce((best,r,i)=>Math.abs(x-(r.left+r.width/2))<Math.abs(x-(rects[best].left+rects[best].width/2))?i:best,0)];};
+ const clear=()=>{gesture=null;nav.classList.remove('is-scrubbing');buttons().forEach(b=>b.classList.remove('scrub-target'));};
+ const mark=target=>buttons().forEach(b=>b.classList.toggle('scrub-target',b===target));
+ const position=x=>{const g=gesture;if(!g)return;nav.style.setProperty('--scrub-x',Math.max(g.min,Math.min(g.max,g.left+x-g.x))+'px');};
+ const release=id=>{if(nav.hasPointerCapture(id))nav.releasePointerCapture(id)};
  nav.addEventListener('click',e=>{if(e.detail!==0&&Date.now()<Number(nav.dataset.suppressClickUntil||0)){e.preventDefault();e.stopImmediatePropagation();}}, {...options,capture:true});
- nav.addEventListener('pointerdown',e=>{const target=e.target.closest('button[data-route]');if(!target||e.button!==0||e.isPrimary===false)return;gesture={id:e.pointerId,x:e.clientX,y:e.clientY,dragged:false};nav.setPointerCapture(e.pointerId);highlight(target);},options);
- nav.addEventListener('pointermove',e=>{const g=gesture;if(!g||g.id!==e.pointerId)return;if(!g.dragged&&Math.hypot(e.clientX-g.x,e.clientY-g.y)<8)return;g.dragged=true;e.preventDefault();nav.classList.add('is-scrubbing');highlight(tabAtPoint([...nav.querySelectorAll('button[data-route]')],e.clientX,e.clientY));},{...options,passive:false});
- nav.addEventListener('pointerup',e=>{const g=gesture;if(!g||g.id!==e.pointerId)return;const target=tabAtPoint([...nav.querySelectorAll('button[data-route]')],e.clientX,e.clientY);clear();if(nav.hasPointerCapture(e.pointerId))nav.releasePointerCapture(e.pointerId);e.preventDefault();nav.dataset.suppressClickUntil=String(Date.now()+500);if(target)onSelect(target.dataset.route);},options);
- const cancel=e=>{if(gesture?.id!==e.pointerId)return;nav.dataset.suppressClickUntil=String(Date.now()+500);clear();if(nav.hasPointerCapture(e.pointerId))nav.releasePointerCapture(e.pointerId);};
+ nav.addEventListener('pointerdown',e=>{const target=e.target.closest('button[data-route]');if(!target||e.button!==0||e.isPrimary===false||gesture)return;const tabs=buttons(),n=nav.getBoundingClientRect(),r=target.getBoundingClientRect(),first=tabs[0].getBoundingClientRect(),last=tabs.at(-1).getBoundingClientRect(),origin=n.left+nav.clientLeft;
+  gesture={id:e.pointerId,x:e.clientX,left:r.left-origin,width:r.width,min:first.left-origin,max:last.right-origin-r.width};
+  nav.style.setProperty('--scrub-width',r.width+'px');position(e.clientX);mark(target);nav.classList.add('is-scrubbing');nav.setPointerCapture(e.pointerId);
+ },options);
+ nav.addEventListener('pointermove',e=>{if(!gesture||gesture.id!==e.pointerId)return;e.preventDefault();position(e.clientX);mark(targetAt(e.clientX,e.clientY));},{...options,passive:false});
+ nav.addEventListener('pointerup',e=>{if(!gesture||gesture.id!==e.pointerId)return;const target=targetAt(e.clientX,e.clientY);clear();release(e.pointerId);e.preventDefault();nav.dataset.suppressClickUntil=String(Date.now()+500);
+  // Replace the dragged highlight directly with the new selection, never the old one.
+  if(target){buttons().forEach(b=>b.classList.toggle('active',b===target));onSelect(target.dataset.route);}
+ },options);
+ const cancel=e=>{if(gesture?.id!==e.pointerId)return;nav.dataset.suppressClickUntil=String(Date.now()+500);clear();release(e.pointerId);};
  nav.addEventListener('pointercancel',cancel,options);nav.addEventListener('lostpointercapture',e=>{if(e.target===nav)cancel(e);},options);
- return ()=>{if(gesture&&nav.hasPointerCapture(gesture.id))nav.releasePointerCapture(gesture.id);clear();controller.abort();};
+ return ()=>{const id=gesture?.id;clear();if(id!==undefined)release(id);controller.abort();};
 }
