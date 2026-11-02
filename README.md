@@ -57,7 +57,7 @@ Statusleiste: `black-translucent`, `viewport-fit=cover`, Theme-Hintergrund berei
 
 ## Bedienungs- und Layoutkorrekturen
 
-Karten-Gesten sind auf den Kartenbereich begrenzt (`touch-action: none` und lokale Touch-/Safari-Gestenbehandlung). Die Navigation bleibt bei Aktualisierungen im DOM; die Auswahlblase folgt dem Finger ohne Positionsanimation. Elf Gesten-Regressionsfälle prüfen unter anderem wiederholte Drags, Pointer-Abbruch, Begrenzung und doppelte Klicks. Auslastungskarten haben eigene Innenabstände. Datumsfelder sind in allen Formularen auf die verfügbare Breite begrenzt; Einstellungen haben getrennte Abstände. Die Begrüßungszeile verwendet eine größere Schrift mit ganzzahliger Zeilenhöhe.
+Karten-Gesten sind auf den Kartenbereich begrenzt (`touch-action: none` und lokale Touch-/Safari-Gestenbehandlung). Die Navigation bleibt bei Aktualisierungen im DOM; die Auswahlblase folgt dem Finger ohne Positionsanimation. 14 Gesten-Regressionsfälle prüfen unter anderem wiederholte Drags, Pointer-Abbruch, Begrenzung und doppelte Klicks. Auslastungskarten haben eigene Innenabstände. Datumsfelder sind in allen Formularen auf die verfügbare Breite begrenzt; Einstellungen haben getrennte Abstände. Die Begrüßungszeile verwendet eine größere Schrift mit ganzzahliger Zeilenhöhe.
 
 ## App-Icon
 
@@ -86,7 +86,7 @@ Sperren gelten für alle CampusPark-Datenzugriffe, auch mit bestehenden Sessions
 
 Parkflächen werden deaktiviert statt gelöscht, sodass Historien und laufende Parkvorgänge erhalten bleiben. Kapazitäten können nicht unter die aktuelle Belegung abgesenkt werden. Admins sehen E-Mail, Anzeigename, Kennzeichen, Registrierungs-/Anmeldezeit und Sperrstatus, keine Passwörter und keine fremden Chat-Inhalte.
 
-Validierung: 17 bisherige Datenbanktests, 15 Admin-/Berechtigungstests, 7 Freigabe-/Auth-Hook-Tests, 11 Gestentests. Referenzen: [Supabase-Funktionsberechtigungen](https://supabase.com/docs/guides/database/functions), [Supabase RLS](https://supabase.com/docs/guides/database/postgres/row-level-security).
+Validierung: 17 bisherige Datenbanktests, 15 Admin-/Berechtigungstests, 7 Freigabe-/Auth-Hook-Tests, 14 Gestentests. Referenzen: [Supabase-Funktionsberechtigungen](https://supabase.com/docs/guides/database/functions), [Supabase RLS](https://supabase.com/docs/guides/database/postgres/row-level-security).
 
 ## Freigabe neuer Registrierungen
 
@@ -97,3 +97,5 @@ Für die bereits installierte Admin-Version: `migration-approval.sql` ausführen
 Admins geben Konten unter **Profil → Administration → Freigaben** frei. Freigabe gewährt ausschließlich die normale User-Rolle. Alternativ kann die Projektverwaltung `is_approved` im geschützten Datenbankdatensatz setzen. Neue Registrierungen erscheinen auch ohne fertiges Profil in der Freigabeliste. Nach Freigabe meldet sich die Person normal an und vervollständigt ihr Profil. Es wird keine automatische Freigabe-E-Mail verschickt.
 
 Die E-Mail-Bestätigung bleibt für diese Studien-Demo wie vereinbart deaktiviert. Supabase speichert die Registrierung vor der anschließenden Token-Ausgabe; ein wegen ausstehender Freigabe verweigerter Token verhindert deshalb nicht, dass das neue Konto in der Verwaltung erscheint. Die App zeigt in diesem Fall den Freigabehinweis.
+
+Verlässt der Finger beim Wischen den Trefferbereich der Menüleiste, bleiben Glasposition und zuletzt berührter Menüpunkt erhalten. Loslassen außerhalb wählt diesen Punkt mit dem weichen Übergang aus; erneutes Hineinziehen setzt die Verfolgung fort. Ein tatsächlicher Pointer-Abbruch wählt weiterhin nichts aus.

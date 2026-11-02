@@ -60,16 +60,17 @@ export function installTabScrub(nav,onSelect){
  const clear=()=>{clearTimeout(settleTimer);gesture=null;nav.classList.remove('is-scrubbing','is-settling');buttons().forEach(b=>b.classList.remove('scrub-target'));};
  const visualLeft=()=>new DOMMatrixReadOnly(getComputedStyle(nav,'::before').transform).m41;
  const mark=target=>buttons().forEach(b=>b.classList.toggle('scrub-target',b===target));
+ // Leaving the hit area freezes both the glass and its last valid destination.
  const position=x=>{const g=gesture;if(!g)return;nav.style.setProperty('--scrub-x',Math.max(g.min,Math.min(g.max,g.left+x-g.x))+'px');};
  const release=id=>{if(nav.hasPointerCapture(id))nav.releasePointerCapture(id)};
  nav.addEventListener('click',e=>{if(e.detail!==0&&Date.now()<Number(nav.dataset.suppressClickUntil||0)){e.preventDefault();e.stopImmediatePropagation();}}, {...options,capture:true});
  nav.addEventListener('pointerdown',e=>{const target=e.target.closest('button[data-route]');if(!target||e.button!==0||e.isPrimary===false||gesture)return;const tabs=buttons(),n=nav.getBoundingClientRect(),r=target.getBoundingClientRect(),first=tabs[0].getBoundingClientRect(),last=tabs.at(-1).getBoundingClientRect(),origin=n.left+nav.clientLeft;
   const interrupted=nav.classList.contains('is-settling')?visualLeft():null;clear();
-  gesture={id:e.pointerId,x:e.clientX,left:interrupted??r.left-origin,width:r.width,min:first.left-origin,max:last.right-origin-r.width};
+  gesture={id:e.pointerId,target,x:e.clientX,left:interrupted??r.left-origin,width:r.width,min:first.left-origin,max:last.right-origin-r.width};
   nav.style.setProperty('--scrub-width',r.width+'px');position(e.clientX);mark(target);nav.classList.add('is-scrubbing');nav.setPointerCapture(e.pointerId);
  },options);
- nav.addEventListener('pointermove',e=>{if(!gesture||gesture.id!==e.pointerId)return;e.preventDefault();position(e.clientX);mark(targetAt(e.clientX,e.clientY));},{...options,passive:false});
- nav.addEventListener('pointerup',e=>{if(!gesture||gesture.id!==e.pointerId)return;const target=targetAt(e.clientX,e.clientY);position(e.clientX);gesture=null;release(e.pointerId);e.preventDefault();nav.dataset.suppressClickUntil=String(Date.now()+500);
+ nav.addEventListener('pointermove',e=>{if(!gesture||gesture.id!==e.pointerId)return;e.preventDefault();const target=targetAt(e.clientX,e.clientY);if(!target)return;position(e.clientX);gesture.target=target;mark(target);},{...options,passive:false});
+ nav.addEventListener('pointerup',e=>{if(!gesture||gesture.id!==e.pointerId)return;const inside=targetAt(e.clientX,e.clientY),target=inside||gesture.target;if(inside)position(e.clientX);gesture=null;release(e.pointerId);e.preventDefault();nav.dataset.suppressClickUntil=String(Date.now()+500);
   const destination=target||buttons().find(b=>b.classList.contains('active'));
   if(destination&&!reducedMotion()){
    // Commit the last finger position before starting the release-only transition.
