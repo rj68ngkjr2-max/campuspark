@@ -25,7 +25,7 @@ pnpm test
 pnpm build
 ```
 
-`source-app.js` enthält die lesbare Oberfläche, `backend.js` die Supabase-Anbindung, `gestures.js` die Gesten und `auth-storage.js` die Sitzungsspeicherung. `styles.css` baut auf der bereitgestellten Vorlage auf. `build.mjs` erzeugt `app.js` und die Cache-Version in `sw.js`. Die gebauten Dateien sind eingecheckt, damit GitHub Pages ohne zusätzliche Build-Pipeline funktioniert.
+`source-app.js` enthält die lesbare Oberfläche, `backend.js` die Supabase-Anbindung, `gestures.js` die Gesten und `auth-storage.js` die Sitzungsspeicherung. `styles.css` baut auf der bereitgestellten Vorlage auf. `source-index.html` enthält das HTML. `build.mjs` erzeugt `app.js`, `index.html` mit versionierten Asset-URLs und die Cache-Version in `sw.js`. Die gebauten Dateien sind eingecheckt, damit GitHub Pages ohne zusätzliche Build-Pipeline funktioniert.
 
 GitHub Pages: Branch `main`, Ordner `/ (root)`. Nach Änderungen `pnpm build` ausführen und Quellcode und Build gemeinsam committen.
 
