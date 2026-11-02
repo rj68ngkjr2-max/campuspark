@@ -138,6 +138,9 @@ begin
   if (select count(*) from campus.conversations where passenger_id=uid and created_at>now()-interval '1 day')>=30 then raise exception 'RATE_LIMIT'; end if;
   insert into campus.conversations(ride_id,passenger_id) values(r.id,uid) on conflict(ride_id,passenger_id) do nothing;
   select * into c from campus.conversations where ride_id=r.id and passenger_id=uid;
+  if c.status in ('declined','withdrawn') then raise exception 'CHAT_CLOSED'; end if;
+  if exists(select 1 from campus.messages where conversation_id=c.id) then return to_jsonb(c.id); end if;
+  if (select count(*) from campus.messages where sender_id=uid and created_at>now()-interval '1 minute')>=30 then raise exception 'RATE_LIMIT'; end if;
   message_text:=trim(payload->>'body');
   if message_text is null or length(message_text) not between 1 and 2000 then raise exception 'INVALID_MESSAGE'; end if;
   insert into campus.messages(conversation_id,sender_id,body,client_id) values(c.id,uid,message_text,(payload->>'client_id')::uuid) on conflict(sender_id,client_id) do nothing;

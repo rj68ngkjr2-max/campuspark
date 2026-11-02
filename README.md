@@ -6,7 +6,7 @@ Mobile Campus-App auf Basis der CampusPark-HTML-Vorlage und der Navigationsmecha
 
 ## Funktionen
 
-- Supabase-Anmeldung mit E-Mail und Passwort, optional dauerhaft angemeldet bleiben und Passwort-Rücksetzung.
+- Supabase-Anmeldung mit E-Mail und Passwort, optional dauerhaft angemeldet bleiben.
 - Privates Profil mit Anzeigename und Kennzeichen; Kennzeichen werden anderen Personen nicht angezeigt.
 - Vier Modellparkflächen, gemeinsame Belegung aus aktiven App-Check-ins, Zeitverlängerung und Check-out per Wischen oder Taste. Abgelaufene Check-ins zählen automatisch nicht mehr zur Belegung.
 - Mitfahrangebote und Fahrtgesuche mit Datum, Uhrzeit und Streckenfilter. Angebote absagen und eigene Gesuche schließen.
@@ -41,12 +41,12 @@ Die sichtbare App aktualisiert Belegung und Ungelesen-Zähler alle zehn Sekunden
 
 ## Anmeldung und E-Mail
 
-Site URL und erlaubte Weiterleitungen sind auf die GitHub-Pages-Adresse eingestellt. E-Mail-Bestätigung bleibt aktiviert. Der tatsächliche Versand von Bestätigungs- und Rücksetzlinks hängt vom Supabase-Maildienst bzw. einer eigenen SMTP-Konfiguration ab. Für Registrierung durch beliebige externe Adressen muss in Supabase ein eigener Mailanbieter eingerichtet werden; Supabases Standarddienst ist eingeschränkt. Ohne Mailzustellung kann ein neues Konto noch nicht angemeldet werden.
+Site URL und erlaubte Weiterleitungen sind auf die GitHub-Pages-Adresse eingestellt. Für die Studien-Demo ist die E-Mail-Bestätigung auf ausdrücklichen Nutzerwunsch deaktiviert. Registrierung und Anmeldung funktionieren direkt; die Inhaberschaft eingegebener E-Mail-Adressen wird nicht geprüft. Es ist kein eigener SMTP-Anbieter eingerichtet. Die Oberfläche bietet deshalb aktuell keine Passwort-Rücksetzung per E-Mail an. Für einen späteren regulären Betrieb SMTP einrichten, die Bestätigung aktivieren und den Rücksetzablauf wieder einblenden.
 
 Für die iPhone-Installation die App in Safari öffnen und über Teilen → Zum Home-Bildschirm hinzufügen.
 
 ## Prüfung
 
-16 PostgreSQL-Tests mit PGlite prüfen unter anderem fremde Datenzugriffe, Profilanlage, Kapazität, doppelte Check-ins, Nachrichtenwiederholungen, Sitzplatzvergabe, Lesestände und Absagen. Mobile Navigation, Fingerziehen über die Menüleiste, Check-in und Formulare wurden zusätzlich mit isolierten lokalen Testdaten im Browser geprüft. Diese Testdaten werden nicht veröffentlicht.
+17 PostgreSQL-Tests mit PGlite prüfen unter anderem fremde Datenzugriffe, Profilanlage, Kapazität, doppelte Check-ins, Nachrichtenwiederholungen, Sitzplatzvergabe, Lesestände und Absagen. Mobile Navigation, Fingerziehen über die Menüleiste, Check-in und Formulare wurden zusätzlich mit isolierten lokalen Testdaten im Browser geprüft. Diese Testdaten werden nicht veröffentlicht.
 
 Technische Referenzen: [Supabase Database Functions](https://supabase.com/docs/guides/database/functions), [Supabase Auth](https://supabase.com/docs/guides/auth/passwords), [GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site).
